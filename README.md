@@ -20,6 +20,11 @@ goes, one save for each campaign. Continue picks up the most recent, Load
 any of them. Escape is the game menu (options, Save and Quit); each screen
 shows its keys.
 
+    armcom2 --battle [campaign]
+
+goes straight into a battle with a fresh tank and crew, for trying the
+battle rules (nothing is saved), and
+
     armcom2 --art
 
 browses the game's pictures.

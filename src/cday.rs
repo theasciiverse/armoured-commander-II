@@ -953,6 +953,30 @@ impl Game {
     }
 }
 
+impl Game {
+    /// A campaign set up without its screens, as New Campaign would: the
+    /// campaign's first day, its first tank with a fresh crew, and the day
+    /// ready to start. For tests and `--battle`.
+    pub fn quick_campaign(&mut self, campaign: &str) {
+        let mut c = crate::campaign::Campaign::new();
+        let (name, data) = defs::defs().campaigns.iter().find(|(n, _)| n == campaign).unwrap_or(&defs::defs().campaigns[0]);
+        c.filename = name.clone();
+        c.stats = data.as_object().cloned().unwrap_or_default();
+        c.generate_combat_calendar(&mut self.rng);
+        c.today = c.combat_calendar.first().cloned().unwrap_or_default();
+        let id = defs::strings(&c.stats["player_unit_list"])[0].clone();
+        let mut u = Unit::new(&id, &mut self.rng).expect("the campaign's first tank");
+        u.nation = text(&c.stats["player_nation"]).to_string();
+        let skills = c.national_skills();
+        let today = c.today.clone();
+        u.generate_new_personnel(&CrewContext { player: true, national_skills: &skills, today: &today }, &mut self.rng);
+        u.clear_gun_ammo();
+        c.player_unit = Some(u);
+        self.campaign = Some(c);
+        self.new_campaign_day();
+    }
+}
+
 pub(crate) struct AmmoMenu {
     /// Index into the gun list.
     pub gun: usize,
@@ -962,7 +986,7 @@ pub(crate) struct AmmoMenu {
 }
 
 /// The ammunition menu's Default Load (X).
-fn default_load(w: &mut crate::model::Weapon) {
+pub(crate) fn default_load(w: &mut crate::model::Weapon) {
     let max = w.max_ammo;
     let rr = w.rr_size;
     let stores = w.ammo_stores.as_mut().unwrap();
@@ -1031,21 +1055,7 @@ pub mod tests {
     /// A campaign with its first day, as New Campaign makes it, headless.
     pub fn new_game(campaign: &str, seed: u64) -> Game {
         let mut g = Game::new(Screen::headless(), Rng::new(seed));
-        let mut c = Campaign::new();
-        let (_, data) = defs::defs().campaigns.iter().find(|(n, _)| n == campaign).unwrap();
-        c.stats = data.as_object().unwrap().clone();
-        c.generate_combat_calendar(&mut g.rng);
-        c.today = c.combat_calendar[0].clone();
-        let id = defs::strings(&c.stats["player_unit_list"])[0].clone();
-        let mut u = Unit::new(&id, &mut g.rng).unwrap();
-        u.nation = text(&c.stats["player_nation"]).to_string();
-        let skills = c.national_skills();
-        let today = c.today.clone();
-        u.generate_new_personnel(&CrewContext { player: true, national_skills: &skills, today: &today }, &mut g.rng);
-        u.clear_gun_ammo();
-        c.player_unit = Some(u);
-        g.campaign = Some(c);
-        g.new_campaign_day();
+        g.quick_campaign(campaign);
         g
     }
 

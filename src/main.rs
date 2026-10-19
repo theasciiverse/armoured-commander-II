@@ -34,16 +34,20 @@ use std::io;
 use std::time::{Duration, Instant};
 use title::{Choice, MainMenu};
 
-const HELP: &str = "armcom2 [--art]
+const HELP: &str = "armcom2 [--art | --battle [campaign]]
 
 Armoured Commander II, the World War II tank commander roguelike by
 Gregory Adam Scott, on its way to the terminal. Being ported: New
 Campaign, the calendar, the crew, the day map, the battles, the saves and
 the sound are ported.
 
-  --art   browse the game's REXPaint art (portraits, flags, maps);
-          left/right to change picture, f to switch between its own size
-          and the screen's, q to quit
+  --art     browse the game's REXPaint art (portraits, flags, maps);
+            left/right to change picture, f to switch between its own size
+            and the screen's, q to quit
+  --battle  go straight into a battle with a fresh tank and crew, for
+            trying the battle rules: the first tank of the campaign named
+            (poland_campaign, pattons_best, ...; default a random one),
+            in an enemy zone of its first day; nothing is saved
 
 Needs a terminal of at least 100x30.
 Session log: RUST_LOG=debug armcom2 2>armcom2.log";
@@ -68,7 +72,8 @@ impl Mode {
 }
 
 fn main() -> io::Result<()> {
-    env_logger::init();
+    // the Ogg decoder logs every sound it opens; only its warnings
+    env_logger::Builder::from_default_env().filter_module("symphonia", log::LevelFilter::Warn).init();
     // a panic leaves no theme tune playing on
     let hook = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
@@ -82,6 +87,28 @@ fn main() -> io::Result<()> {
     }
     let mut rng = Rng::from_clock();
     fit_screen();
+    if let Some(n) = args.iter().position(|a| a == "--battle") {
+        let names: Vec<String> = defs::defs().campaigns.iter().map(|(n, _)| n.clone()).collect();
+        let name = args.get(n + 1).cloned().unwrap_or_else(|| rng.choice(&names).clone());
+        log::info!("start: battle ({name})");
+        let terminal = ratatui::init();
+        let _ = ratatui::crossterm::execute!(io::stdout(), event::EnableMouseCapture);
+        let mut g = game::Game::new(ui::Screen::new(Some(terminal)), Rng::new(rng.int(1, i32::MAX) as u64));
+        g.no_saves = true;
+        g.quick_campaign(&name);
+        for w in &mut g.campm().pum().weapons {
+            if w.ammo_stores.is_some() {
+                cday::default_load(w);
+            }
+        }
+        let zone = g.cd().player_unit_location;
+        g.cdm().hexm(zone).controlled_by = 1;
+        g.cdm().started = true;
+        g.scenario = Some(battle::Scenario::new(zone));
+        g.do_scenario_loop();
+        ui::quit();
+    }
+
     let mode = if args.iter().any(|a| a == "--art") {
         art_mode(0, false)
     } else {

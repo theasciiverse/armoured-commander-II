@@ -91,6 +91,9 @@ pub fn from_json(g: &mut Game, json: &str) -> Result<(), String> {
 
 /// `SaveGame`
 pub fn save_game(g: &Game) {
+    if g.no_saves {
+        return;
+    }
     let Some(camp) = &g.campaign else { return };
     let Some(p) = path(&camp.filename) else { return };
     let result = (|| -> Result<(), String> {

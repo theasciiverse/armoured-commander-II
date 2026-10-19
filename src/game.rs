@@ -210,6 +210,8 @@ pub struct Game {
     pub battle_anim: crate::battle_ui::BattleAnim,
     /// Tests: draw the screens even without a terminal.
     pub render_headless: bool,
+    /// Nothing is saved (`--battle`).
+    pub no_saves: bool,
 }
 
 impl Game {
@@ -240,6 +242,7 @@ impl Game {
             scenario: None,
             battle_anim: crate::battle_ui::BattleAnim::default(),
             render_headless: false,
+            no_saves: false,
         };
         g.generate_keyboards();
         g
