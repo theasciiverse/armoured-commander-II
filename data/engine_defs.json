@@ -1,0 +1,1743 @@
+{
+ "DEBUG": false,
+ "NAME": "Armoured Commander II",
+ "VERSION": "3.0.2",
+ "DISCLAIMER": "This is a work of fiction and no endorsement of any historical ideologies or events depicted within is intended.",
+ "DATAPATH": "data/",
+ "SAVEPATH": "saved_campaigns/",
+ "SOUNDPATH": "sounds/",
+ "CAMPAIGNPATH": "campaigns/",
+ "RENDERER": 0,
+ "LIMIT_FPS": 50,
+ "ANIM_UPDATE_TIMER": 0.15,
+ "WINDOW_WIDTH": 90,
+ "WINDOW_HEIGHT": 60,
+ "WINDOW_XM": 45,
+ "WINDOW_YM": 30,
+ "KEYBOARDS": [
+  "QWERTY",
+  "AZERTY",
+  "QWERTZ",
+  "Dvorak",
+  "Custom"
+ ],
+ "MAX_TANK_NAME_LENGTH": 20,
+ "MAX_NICKNAME_LENGTH": 10,
+ "DEBUG_OPTIONS": [
+  "Regenerate CD Map Roads & Rivers",
+  "Attack Selected Crewman (Scenario)",
+  "Set Crewman Injury",
+  "Set Time to End of Day",
+  "End Current Scenario",
+  "Export Campaign Log",
+  "Regenerate Weather"
+ ],
+ "DESTHEX": [
+  [
+   0,
+   -1
+  ],
+  [
+   1,
+   -1
+  ],
+  [
+   1,
+   0
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   -1,
+   1
+  ],
+  [
+   -1,
+   0
+  ]
+ ],
+ "CD_DESTHEX": [
+  [
+   1,
+   -1
+  ],
+  [
+   1,
+   0
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   -1,
+   1
+  ],
+  [
+   -1,
+   0
+  ],
+  [
+   0,
+   -1
+  ]
+ ],
+ "PLOT_DIR": [
+  [
+   0,
+   -1
+  ],
+  [
+   1,
+   -1
+  ],
+  [
+   1,
+   1
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   -1,
+   1
+  ],
+  [
+   -1,
+   -1
+  ]
+ ],
+ "TURRET_CHAR": [
+  254,
+  47,
+  92,
+  254,
+  47,
+  92
+ ],
+ "HEX_EDGE_CELLS": {
+  "0": [
+   [
+    -1,
+    -2
+   ],
+   [
+    0,
+    -2
+   ],
+   [
+    1,
+    -2
+   ]
+  ],
+  "1": [
+   [
+    1,
+    -2
+   ],
+   [
+    2,
+    -1
+   ],
+   [
+    3,
+    0
+   ]
+  ],
+  "2": [
+   [
+    3,
+    0
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "3": [
+   [
+    1,
+    2
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    -1,
+    2
+   ]
+  ],
+  "4": [
+   [
+    -1,
+    2
+   ],
+   [
+    -2,
+    1
+   ],
+   [
+    -3,
+    0
+   ]
+  ],
+  "5": [
+   [
+    -3,
+    0
+   ],
+   [
+    -2,
+    -1
+   ],
+   [
+    -1,
+    -2
+   ]
+  ]
+ },
+ "CD_HEX_EDGE_CELLS": {
+  "0": [
+   [
+    0,
+    -4
+   ],
+   [
+    1,
+    -3
+   ],
+   [
+    2,
+    -2
+   ],
+   [
+    3,
+    -1
+   ]
+  ],
+  "1": [
+   [
+    3,
+    -1
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    3,
+    1
+   ]
+  ],
+  "2": [
+   [
+    3,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    0,
+    4
+   ]
+  ],
+  "3": [
+   [
+    0,
+    4
+   ],
+   [
+    -1,
+    3
+   ],
+   [
+    -2,
+    2
+   ],
+   [
+    -3,
+    1
+   ]
+  ],
+  "4": [
+   [
+    -3,
+    1
+   ],
+   [
+    -3,
+    0
+   ],
+   [
+    -3,
+    -1
+   ]
+  ],
+  "5": [
+   [
+    -3,
+    -1
+   ],
+   [
+    -2,
+    -2
+   ],
+   [
+    -1,
+    -3
+   ],
+   [
+    0,
+    -4
+   ]
+  ]
+ },
+ "CAMPAIGN_DAY_HEXES": [
+  [
+   0,
+   0
+  ],
+  [
+   1,
+   0
+  ],
+  [
+   2,
+   0
+  ],
+  [
+   3,
+   0
+  ],
+  [
+   4,
+   0
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   1,
+   1
+  ],
+  [
+   2,
+   1
+  ],
+  [
+   3,
+   1
+  ],
+  [
+   -1,
+   2
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   2,
+   2
+  ],
+  [
+   3,
+   2
+  ],
+  [
+   -1,
+   3
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   -2,
+   4
+  ],
+  [
+   -1,
+   4
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   2,
+   4
+  ],
+  [
+   -2,
+   5
+  ],
+  [
+   -1,
+   5
+  ],
+  [
+   0,
+   5
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   -3,
+   6
+  ],
+  [
+   -2,
+   6
+  ],
+  [
+   -1,
+   6
+  ],
+  [
+   0,
+   6
+  ],
+  [
+   1,
+   6
+  ],
+  [
+   -3,
+   7
+  ],
+  [
+   -2,
+   7
+  ],
+  [
+   -1,
+   7
+  ],
+  [
+   0,
+   7
+  ],
+  [
+   -4,
+   8
+  ],
+  [
+   -3,
+   8
+  ],
+  [
+   -2,
+   8
+  ],
+  [
+   -1,
+   8
+  ],
+  [
+   0,
+   8
+  ]
+ ],
+ "KEY_COLOR": [
+  255,
+  0,
+  255
+ ],
+ "ACTION_KEY_COL": [
+  51,
+  153,
+  255
+ ],
+ "HIGHLIGHT_MENU_COL": [
+  30,
+  70,
+  130
+ ],
+ "TITLE_COL": [
+  102,
+  178,
+  255
+ ],
+ "PORTRAIT_BG_COL": [
+  217,
+  108,
+  0
+ ],
+ "UNKNOWN_UNIT_COL": [
+  127,
+  127,
+  127
+ ],
+ "ENEMY_UNIT_COL": [
+  255,
+  20,
+  20
+ ],
+ "ALLIED_UNIT_COL": [
+  120,
+  120,
+  255
+ ],
+ "GOLD_COL": [
+  255,
+  255,
+  100
+ ],
+ "DIRT_ROAD_COL": [
+  80,
+  50,
+  20
+ ],
+ "STONE_ROAD_COL": [
+  110,
+  110,
+  110
+ ],
+ "RIVER_COL": [
+  0,
+  0,
+  140
+ ],
+ "BRIDGE_COL": [
+  40,
+  20,
+  10
+ ],
+ "MONTH_NAMES": [
+  "",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+ ],
+ "PHASE_COMMAND": 0,
+ "PHASE_SPOTTING": 1,
+ "PHASE_CREW_ACTION": 2,
+ "PHASE_MOVEMENT": 3,
+ "PHASE_SHOOTING": 4,
+ "PHASE_ALLIED_ACTION": 5,
+ "PHASE_ENEMY_ACTION": 6,
+ "SCEN_PHASE_NAMES": [
+  "Command",
+  "Spotting",
+  "Crew Action",
+  "Movement",
+  "Shooting",
+  "Allied Action",
+  "Enemy Action"
+ ],
+ "SCEN_PHASE_COL": [
+  [
+   255,
+   255,
+   0
+  ],
+  [
+   191,
+   0,
+   255
+  ],
+  [
+   114,
+   114,
+   255
+  ],
+  [
+   0,
+   255,
+   0
+  ],
+  [
+   255,
+   0,
+   0
+  ],
+  [
+   120,
+   120,
+   255
+  ],
+  [
+   255,
+   20,
+   20
+  ]
+ ],
+ "CC_MENU_LIST": [
+  [
+   "Proceed",
+   1,
+   [
+    70,
+    140,
+    0
+   ]
+  ],
+  [
+   "Crew and Tank",
+   2,
+   [
+    140,
+    140,
+    0
+   ]
+  ],
+  [
+   "Journal",
+   3,
+   [
+    0,
+    0,
+    150
+   ]
+  ],
+  [
+   "Field Hospital",
+   4,
+   [
+    200,
+    0,
+    0
+   ]
+  ]
+ ],
+ "CD_MENU_LIST": [
+  [
+   "Supply",
+   1,
+   [
+    128,
+    100,
+    64
+   ]
+  ],
+  [
+   "Crew",
+   2,
+   [
+    140,
+    140,
+    0
+   ]
+  ],
+  [
+   "Travel",
+   3,
+   [
+    70,
+    140,
+    0
+   ]
+  ],
+  [
+   "Group",
+   4,
+   [
+    180,
+    0,
+    45
+   ]
+  ]
+ ],
+ "CD_DIR_ARROW": [
+  228,
+  26,
+  229,
+  230,
+  27,
+  231
+ ],
+ "CD_TRAVEL_CMDS": [
+  [
+   "e",
+   2,
+   -2,
+   228
+  ],
+  [
+   "d",
+   2,
+   0,
+   26
+  ],
+  [
+   "c",
+   2,
+   2,
+   229
+  ],
+  [
+   "z",
+   -2,
+   2,
+   230
+  ],
+  [
+   "a",
+   -2,
+   0,
+   27
+  ],
+  [
+   "q",
+   -2,
+   -2,
+   231
+  ]
+ ],
+ "AMMO_TYPES": [
+  "HE",
+  "AP",
+  "Smoke"
+ ],
+ "AMMO_TYPE_COLOUR": {
+  "HE": [
+   191,
+   191,
+   191
+  ],
+  "AP": [
+   255,
+   255,
+   0
+  ],
+  "Smoke": [
+   63,
+   63,
+   63
+  ]
+ },
+ "MG_WEAPONS": [
+  "Co-ax MG",
+  "Turret MG",
+  "Hull MG",
+  "AA MG",
+  "HMG"
+ ],
+ "RECORD_LIST": [
+  "Battles Fought",
+  "Map Areas Captured",
+  "Gun Hits",
+  "Vehicles Destroyed",
+  "Guns Destroyed",
+  "Infantry Destroyed"
+ ],
+ "MISSION_DESC": {
+  "Advance": "Enemy resistance is scattered and we are pushing forward. Advance into enemy territory, destroy any resistance, and capture territory.",
+  "Battle": "Your group has been posted to the front line where there is heavy resistance. Break through the enemy defenses, destroy enemy units, and capture territory.",
+  "Counterattack": "After being on the defensive, your battlegroup has been ordered to mount a counterattack against the enemy advance.",
+  "Fighting Withdrawal": "The enemy is mounting a strong attack against our lines. Destroy enemy units but withdraw into friendly territory if necessary.",
+  "Spearhead": "You must pierce the enemy lines, driving forward as far as possible before the end of the day."
+ },
+ "FIELD_HOSPITAL_RELEASE_CHANCE": 4.0,
+ "SPEARHEAD_HEXROW_LEVELS": 2,
+ "LEVEL_RANK_LIST": {
+  "2": 1,
+  "4": 2,
+  "10": 3,
+  "15": 4,
+  "20": 5,
+  "25": 6
+ },
+ "PROMOTION_CHANCE": 18.0,
+ "WEAPON_JAM_CHANCE": 0.5,
+ "WEAPON_UNJAM_CHANCE": 75.0,
+ "DIRECT_HIT_CHANCE": 4.0,
+ "BASE_EXP_REQUIRED": 10.0,
+ "EXP_EXPONENT": 1.1,
+ "REGIONS": {
+  "Northeastern Europe": {
+   "cd_terrain_odds": {
+    "Flat": 50,
+    "Forest": 10,
+    "Hills": 15,
+    "Fields": 10,
+    "Marsh": 5,
+    "Villages": 10
+   },
+   "dirt_road_odds": 40.0,
+   "stone_road_odds": 10.0,
+   "river_odds": 50.0,
+   "season_weather_odds": {
+    "Winter": {
+     "end_date": "03.31",
+     "ground_conditions": {
+      "Dry": 20.0,
+      "Wet": 0.0,
+      "Muddy": 5.0,
+      "Snow": 60.0,
+      "Deep Snow": 15.0
+     },
+     "freezing": 80.0,
+     "cloud_cover": {
+      "Clear": 40.0,
+      "Scattered": 20.0,
+      "Heavy": 20.0,
+      "Overcast": 20.0
+     },
+     "precipitation": {
+      "None": 35.0,
+      "Mist": 10.0,
+      "Rain": 10.0,
+      "Heavy Rain": 5.0,
+      "Light Snow": 10.0,
+      "Snow": 20.0,
+      "Blizzard": 10.0
+     }
+    },
+    "Spring": {
+     "end_date": "06.14",
+     "ground_conditions": {
+      "Dry": 50.0,
+      "Wet": 20.0,
+      "Muddy": 25.0,
+      "Snow": 5.0,
+      "Deep Snow": 0.0
+     },
+     "freezing": 10.0,
+     "cloud_cover": {
+      "Clear": 50.0,
+      "Scattered": 15.0,
+      "Heavy": 20.0,
+      "Overcast": 15.0
+     },
+     "precipitation": {
+      "None": 30.0,
+      "Mist": 10.0,
+      "Rain": 30.0,
+      "Heavy Rain": 20.0,
+      "Light Snow": 10.0,
+      "Snow": 0.0,
+      "Blizzard": 0.0
+     }
+    },
+    "Summer": {
+     "end_date": "09.31",
+     "ground_conditions": {
+      "Dry": 75.0,
+      "Wet": 10.0,
+      "Muddy": 15.0,
+      "Snow": 0.0,
+      "Deep Snow": 0.0
+     },
+     "freezing": 0.0,
+     "cloud_cover": {
+      "Clear": 50.0,
+      "Scattered": 15.0,
+      "Heavy": 20.0,
+      "Overcast": 15.0
+     },
+     "precipitation": {
+      "None": 60.0,
+      "Mist": 10.0,
+      "Rain": 20.0,
+      "Heavy Rain": 10.0,
+      "Light Snow": 0.0,
+      "Snow": 0.0,
+      "Blizzard": 0.0
+     }
+    },
+    "Autumn": {
+     "end_date": "12.01",
+     "ground_conditions": {
+      "Dry": 65.0,
+      "Wet": 10.0,
+      "Muddy": 15.0,
+      "Snow": 10.0,
+      "Deep Snow": 0.0
+     },
+     "freezing": 15.0,
+     "cloud_cover": {
+      "Clear": 50.0,
+      "Scattered": 15.0,
+      "Heavy": 20.0,
+      "Overcast": 15.0
+     },
+     "precipitation": {
+      "None": 50.0,
+      "Mist": 10.0,
+      "Rain": 20.0,
+      "Heavy Rain": 10.0,
+      "Light Snow": 10.0,
+      "Snow": 0.0,
+      "Blizzard": 0.0
+     }
+    }
+   }
+  },
+  "Northwestern Europe": {
+   "cd_terrain_odds": {
+    "Flat": 40,
+    "Forest": 20,
+    "Hills": 10,
+    "Fields": 15,
+    "Marsh": 5,
+    "Villages": 10
+   },
+   "dirt_road_odds": 80.0,
+   "stone_road_odds": 50.0,
+   "river_odds": 20.0,
+   "season_weather_odds": {
+    "Winter": {
+     "end_date": "03.31",
+     "ground_conditions": {
+      "Dry": 25.0,
+      "Wet": 0.0,
+      "Muddy": 5.0,
+      "Snow": 60.0,
+      "Deep Snow": 10.0
+     },
+     "freezing": 60.0,
+     "cloud_cover": {
+      "Clear": 40.0,
+      "Scattered": 20.0,
+      "Heavy": 20.0,
+      "Overcast": 20.0
+     },
+     "precipitation": {
+      "None": 35.0,
+      "Mist": 10.0,
+      "Rain": 10.0,
+      "Heavy Rain": 5.0,
+      "Light Snow": 15.0,
+      "Snow": 20.0,
+      "Blizzard": 5.0
+     }
+    },
+    "Spring": {
+     "end_date": "06.14",
+     "ground_conditions": {
+      "Dry": 50.0,
+      "Wet": 20.0,
+      "Muddy": 25.0,
+      "Snow": 0.0,
+      "Deep Snow": 0.0
+     },
+     "freezing": 5.0,
+     "cloud_cover": {
+      "Clear": 50.0,
+      "Scattered": 15.0,
+      "Heavy": 20.0,
+      "Overcast": 15.0
+     },
+     "precipitation": {
+      "None": 30.0,
+      "Mist": 10.0,
+      "Rain": 30.0,
+      "Heavy Rain": 20.0,
+      "Light Snow": 0.0,
+      "Snow": 0.0,
+      "Blizzard": 0.0
+     }
+    },
+    "Summer": {
+     "end_date": "09.31",
+     "ground_conditions": {
+      "Dry": 75.0,
+      "Wet": 10.0,
+      "Muddy": 15.0,
+      "Snow": 0.0,
+      "Deep Snow": 0.0
+     },
+     "freezing": 0.0,
+     "cloud_cover": {
+      "Clear": 50.0,
+      "Scattered": 15.0,
+      "Heavy": 20.0,
+      "Overcast": 15.0
+     },
+     "precipitation": {
+      "None": 60.0,
+      "Mist": 10.0,
+      "Rain": 20.0,
+      "Heavy Rain": 10.0,
+      "Light Snow": 0.0,
+      "Snow": 0.0,
+      "Blizzard": 0.0
+     }
+    },
+    "Autumn": {
+     "end_date": "12.01",
+     "ground_conditions": {
+      "Dry": 65.0,
+      "Wet": 10.0,
+      "Muddy": 15.0,
+      "Snow": 10.0,
+      "Deep Snow": 0.0
+     },
+     "freezing": 10.0,
+     "cloud_cover": {
+      "Clear": 50.0,
+      "Scattered": 15.0,
+      "Heavy": 20.0,
+      "Overcast": 15.0
+     },
+     "precipitation": {
+      "None": 50.0,
+      "Mist": 10.0,
+      "Rain": 20.0,
+      "Heavy Rain": 10.0,
+      "Light Snow": 10.0,
+      "Snow": 0.0,
+      "Blizzard": 0.0
+     }
+    }
+   }
+  },
+  "Nordic": {
+   "cd_terrain_odds": {
+    "Flat": 20,
+    "Forest": 40,
+    "Hills": 20,
+    "Fields": 10,
+    "Marsh": 5,
+    "Villages": 5
+   },
+   "dirt_road_odds": 20.0,
+   "stone_road_odds": 2.0,
+   "river_odds": 30.0,
+   "season_weather_odds": {
+    "Winter": {
+     "end_date": "03.31",
+     "ground_conditions": {
+      "Dry": 0.0,
+      "Wet": 0.0,
+      "Muddy": 0.0,
+      "Snow": 70.0,
+      "Deep Snow": 30.0
+     },
+     "freezing": 100.0,
+     "cloud_cover": {
+      "Clear": 20.0,
+      "Scattered": 10.0,
+      "Heavy": 10.0,
+      "Overcast": 60.0
+     },
+     "precipitation": {
+      "None": 40.0,
+      "Mist": 0.0,
+      "Rain": 0.0,
+      "Heavy Rain": 0.0,
+      "Light Snow": 25.0,
+      "Snow": 25.0,
+      "Blizzard": 10.0
+     }
+    },
+    "Spring": {
+     "end_date": "06.14",
+     "ground_conditions": {
+      "Dry": 55.0,
+      "Wet": 15.0,
+      "Muddy": 5.0,
+      "Snow": 15.0,
+      "Deep Snow": 10.0
+     },
+     "freezing": 20.0,
+     "cloud_cover": {
+      "Clear": 50.0,
+      "Scattered": 15.0,
+      "Heavy": 20.0,
+      "Overcast": 15.0
+     },
+     "precipitation": {
+      "None": 30.0,
+      "Mist": 15.0,
+      "Rain": 10.0,
+      "Heavy Rain": 5.0,
+      "Light Snow": 20.0,
+      "Snow": 15.0,
+      "Blizzard": 5.0
+     }
+    },
+    "Summer": {
+     "end_date": "09.31",
+     "ground_conditions": {
+      "Dry": 75.0,
+      "Wet": 10.0,
+      "Muddy": 15.0,
+      "Snow": 0.0,
+      "Deep Snow": 0.0
+     },
+     "freezing": 0.0,
+     "cloud_cover": {
+      "Clear": 50.0,
+      "Scattered": 15.0,
+      "Heavy": 20.0,
+      "Overcast": 15.0
+     },
+     "precipitation": {
+      "None": 60.0,
+      "Mist": 10.0,
+      "Rain": 20.0,
+      "Heavy Rain": 10.0,
+      "Light Snow": 0.0,
+      "Snow": 0.0,
+      "Blizzard": 0.0
+     }
+    },
+    "Autumn": {
+     "end_date": "12.01",
+     "ground_conditions": {
+      "Dry": 10.0,
+      "Wet": 20.0,
+      "Muddy": 20.0,
+      "Snow": 40.0,
+      "Deep Snow": 10.0
+     },
+     "freezing": 60.0,
+     "cloud_cover": {
+      "Clear": 20.0,
+      "Scattered": 10.0,
+      "Heavy": 30.0,
+      "Overcast": 40.0
+     },
+     "precipitation": {
+      "None": 15.0,
+      "Mist": 10.0,
+      "Rain": 15.0,
+      "Heavy Rain": 10.0,
+      "Light Snow": 25.0,
+      "Snow": 20.0,
+      "Blizzard": 5.0
+     }
+    }
+   }
+  }
+ },
+ "GROUND_CONDITION_CHANGE_CHANCE": 3.0,
+ "HEAVY_PRECEP_MOD": 5.0,
+ "CREW_STATS": [
+  "Perception",
+  "Morale",
+  "Grit",
+  "Knowledge"
+ ],
+ "PLAYER_POSITIONS": [
+  "Commander",
+  "Commander/Gunner"
+ ],
+ "POSITION_TRANSFER_LIST": {
+  "Commander": [
+   "Commander",
+   "Commander/Gunner"
+  ],
+  "Commander/Gunner": [
+   "Commander/Gunner",
+   "Commander"
+  ],
+  "Gunner": [
+   "Gunner",
+   "Gunner/Loader"
+  ],
+  "Gunner/Loader": [
+   "Gunner/Loader",
+   "Gunner"
+  ],
+  "Loader": [
+   "Loader",
+   "Gunner/Loader"
+  ],
+  "Driver": [
+   "Driver"
+  ],
+  "Assistant Driver": [
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "Port MG Gunner": [
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Assistant Driver",
+   "Radio Operator"
+  ],
+  "Starboard MG Gunner": [
+   "Starboard MG Gunner",
+   "Port MG Gunner",
+   "MG Gunner",
+   "Assistant Driver",
+   "Radio Operator"
+  ],
+  "MG Gunner": [
+   "MG Gunner",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "Assistant Driver",
+   "Radio Operator"
+  ],
+  "Radio Operator": [
+   "Radio Operator",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Assistant Driver"
+  ]
+ },
+ "POSITION_SWITCH_LIST": {
+  "Commander": [
+   "Commander",
+   "Commander/Gunner",
+   "Gunner",
+   "Gunner/Loader",
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "Commander/Gunner": [
+   "Commander",
+   "Commander/Gunner",
+   "Gunner",
+   "Gunner/Loader",
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "Gunner": [
+   "Gunner",
+   "Gunner/Loader",
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "Gunner/Loader": [
+   "Gunner",
+   "Gunner/Loader",
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "Loader": [
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "Driver": [
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "Assistant Driver": [
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "Port MG Gunner": [
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "Starboard MG Gunner": [
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "MG Gunner": [
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ],
+  "Radio Operator": [
+   "Loader",
+   "Driver",
+   "Assistant Driver",
+   "Port MG Gunner",
+   "Starboard MG Gunner",
+   "MG Gunner",
+   "Radio Operator"
+  ]
+ },
+ "TURN_LENGTH": 2,
+ "MAX_BU_LOS": 1,
+ "SPOT_BASE_CHANCE": [
+  95.0,
+  85.0,
+  70.0,
+  50.0
+ ],
+ "PERCEPTION_SPOTTING_MOD": 5.0,
+ "BASE_FORWARD_MOVE_CHANCE": 50.0,
+ "BASE_REVERSE_MOVE_CHANCE": 20.0,
+ "BASE_MOVE_BONUS": 15.0,
+ "CRITICAL_HIT": 3.0,
+ "CRITICAL_MISS": 97.0,
+ "MG_AP_RANGE": 1,
+ "PF_BASE_CHANCE": [
+  [
+   98.0,
+   88.0
+  ],
+  [
+   83.0,
+   78.0
+  ],
+  [
+   72.0,
+   58.0
+  ],
+  [
+   58.0,
+   35.0
+  ]
+ ],
+ "AC_BONUS": [
+  [
+   8.0,
+   15.0
+  ],
+  [
+   10.0,
+   25.0
+  ],
+  [
+   10.0,
+   25.0
+  ],
+  [
+   20.0,
+   35.0
+  ]
+ ],
+ "PF_SIZE_MOD": {
+  "Very Small": -28.0,
+  "Small": -12.0,
+  "Large": 12.0,
+  "Very Large": 28.0
+ },
+ "INF_FP_BASE_CHANCE": 30.0,
+ "VEH_FP_BASE_CHANCE": 20.0,
+ "FP_CHANCE_STEP": 5.0,
+ "FP_CHANCE_STEP_MOD": 0.95,
+ "FP_FULL_EFFECT": 0.75,
+ "FP_CRIT_EFFECT": 0.1,
+ "RESOLVE_FP_BASE_CHANCE": 2.0,
+ "RESOLVE_FP_CHANCE_STEP": 2.0,
+ "RESOLVE_FP_CHANCE_MOD": 1.03,
+ "MORALE_CHECK_BASE_CHANCE": 70.0,
+ "HE_FP_EFFECT": [
+  [
+   200,
+   36
+  ],
+  [
+   183,
+   34
+  ],
+  [
+   170,
+   32
+  ],
+  [
+   160,
+   31
+  ],
+  [
+   150,
+   30
+  ],
+  [
+   140,
+   28
+  ],
+  [
+   128,
+   26
+  ],
+  [
+   120,
+   24
+  ],
+  [
+   107,
+   22
+  ],
+  [
+   105,
+   22
+  ],
+  [
+   100,
+   20
+  ],
+  [
+   95,
+   19
+  ],
+  [
+   88,
+   18
+  ],
+  [
+   85,
+   17
+  ],
+  [
+   80,
+   16
+  ],
+  [
+   75,
+   14
+  ],
+  [
+   70,
+   12
+  ],
+  [
+   65,
+   10
+  ],
+  [
+   60,
+   8
+  ],
+  [
+   57,
+   7
+  ],
+  [
+   50,
+   6
+  ],
+  [
+   45,
+   5
+  ],
+  [
+   37,
+   4
+  ],
+  [
+   30,
+   2
+  ],
+  [
+   25,
+   2
+  ],
+  [
+   20,
+   1
+  ]
+ ],
+ "VEH_FP_TK": [
+  [
+   36,
+   110.0
+  ],
+  [
+   30,
+   100.0
+  ],
+  [
+   24,
+   97.0
+  ],
+  [
+   20,
+   92.0
+  ],
+  [
+   16,
+   83.0
+  ],
+  [
+   12,
+   72.0
+  ],
+  [
+   8,
+   58.0
+  ],
+  [
+   6,
+   42.0
+  ],
+  [
+   4,
+   28.0
+  ],
+  [
+   2,
+   17.0
+  ],
+  [
+   1,
+   8.0
+  ]
+ ],
+ "CC_WEAPON_AP": {
+  "Grenades": 6,
+  "Flame Thrower": 8
+ },
+ "AP_STUN_MARGIN": 10.0,
+ "SCENARIO_TERRAIN_ODDS": {
+  "Flat": {
+   "Open Ground": 60.0,
+   "Broken Ground": 20.0,
+   "Brush": 10.0,
+   "Woods": 5.0,
+   "Wooden Buildings": 4.0,
+   "Rubble": 1.0
+  },
+  "Forest": {
+   "Open Ground": 10.0,
+   "Broken Ground": 15.0,
+   "Brush": 25.0,
+   "Woods": 45.0,
+   "Wooden Buildings": 4.0,
+   "Rubble": 1.0
+  },
+  "Hills": {
+   "Open Ground": 15.0,
+   "Broken Ground": 10.0,
+   "Brush": 5.0,
+   "Woods": 5.0,
+   "Hills": 50.0,
+   "Wooden Buildings": 4.0,
+   "Rubble": 1.0
+  },
+  "Fields": {
+   "Open Ground": 20.0,
+   "Broken Ground": 5.0,
+   "Brush": 5.0,
+   "Woods": 5.0,
+   "Fields": 50.0,
+   "Wooden Buildings": 4.0,
+   "Rubble": 1.0
+  },
+  "Marsh": {
+   "Open Ground": 10.0,
+   "Broken Ground": 5.0,
+   "Brush": 5.0,
+   "Woods": 4.0,
+   "Marsh": 60.0,
+   "Wooden Buildings": 5.0,
+   "Rubble": 1.0
+  },
+  "Villages": {
+   "Open Ground": 5.0,
+   "Broken Ground": 10.0,
+   "Brush": 10.0,
+   "Woods": 5.0,
+   "Fields": 15.0,
+   "Wooden Buildings": 50.0,
+   "Rubble": 5.0
+  }
+ },
+ "SCENARIO_TERRAIN_EFFECTS": {
+  "Open Ground": {
+   "HD Chance": 5.0,
+   "los_mod": 0.0
+  },
+  "Broken Ground": {
+   "TEM": {
+    "Vehicle": -10.0,
+    "Infantry": -15.0,
+    "Deployed Gun": -15.0
+   },
+   "HD Chance": 10.0,
+   "Movement Mod": -5.0,
+   "Bog Mod": 1.0,
+   "los_mod": 3.0
+  },
+  "Brush": {
+   "TEM": {
+    "All": -15.0
+   },
+   "HD Chance": 10.0,
+   "Movement Mod": -15.0,
+   "Bog Mod": 2.0,
+   "Air Burst": 10.0,
+   "Burnable": true,
+   "los_mod": 5.0
+  },
+  "Woods": {
+   "TEM": {
+    "All": -25.0
+   },
+   "HD Chance": 20.0,
+   "Movement Mod": -30.0,
+   "Bog Mod": 5.0,
+   "Double Bog Check": true,
+   "Air Burst": 20.0,
+   "Burnable": true,
+   "los_mod": 10.0
+  },
+  "Fields": {
+   "TEM": {
+    "All": -10.0
+   },
+   "HD Chance": 5.0,
+   "Burnable": true,
+   "los_mod": 5.0
+  },
+  "Hills": {
+   "TEM": {
+    "All": -20.0
+   },
+   "HD Chance": 40.0,
+   "los_mod": 15.0
+  },
+  "Wooden Buildings": {
+   "TEM": {
+    "Vehicle": -20.0,
+    "Infantry": -30.0,
+    "Deployed Gun": -30.0
+   },
+   "HD Chance": 30.0,
+   "los_mod": 10.0,
+   "Burnable": true
+  },
+  "Marsh": {
+   "TEM": {
+    "All": -10.0
+   },
+   "HD Chance": 15.0,
+   "Movement Mod": -30.0,
+   "Bog Mod": 10.0,
+   "Double Bog Check": true,
+   "los_mod": 3.0
+  },
+  "Rubble": {
+   "TEM": {
+    "Vehicle": -15.0,
+    "Infantry": -30.0,
+    "Deployed Gun": -30.0
+   },
+   "HD Chance": 30.0,
+   "los_mod": 10.0,
+   "Bog Mod": 10.0,
+   "Double Bog Check": true
+  }
+ },
+ "GREEBLE_LOCATIONS": [
+  [
+   -1,
+   -1
+  ],
+  [
+   0,
+   -1
+  ],
+  [
+   1,
+   -1
+  ],
+  [
+   -1,
+   0
+  ],
+  [
+   1,
+   0
+  ],
+  [
+   -1,
+   1
+  ],
+  [
+   0,
+   1
+  ],
+  [
+   1,
+   1
+  ]
+ ],
+ "HD_SIZE_MOD": {
+  "Very Small": 12.0,
+  "Small": 6.0,
+  "Normal": 0.0,
+  "Large": -6.0,
+  "Very Large": -12.0
+ },
+ "BASE_SNIPER_TK_CHANCE": 45.0,
+ "BASE_RANDOM_EVENT_CHANCE": 5.0,
+ "BASE_CD_RANDOM_EVENT_CHANCE": 3.0,
+ "BASE_WEATHER_UPDATE_CLOCK": 30
+}

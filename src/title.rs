@@ -42,7 +42,6 @@ pub enum Choice {
     Continue,
     Load,
     NewCampaign,
-    Options,
     Quit,
 }
 
@@ -52,10 +51,12 @@ pub struct MainMenu {
     title: Console,
     gradient_x: i32,
     click: Instant,
-    /// Whether there is a saved campaign to continue (none yet: saves
-    /// are not ported).
+    /// Whether there is a saved campaign to continue.
     saved: bool,
-    /// A line under the menu, for choices not ported yet.
+    /// The options sub-menu is showing.
+    pub options: bool,
+    pub settings: crate::game::Settings,
+    /// A line under the menu.
     pub note: Option<String>,
 }
 
@@ -73,7 +74,9 @@ impl MainMenu {
             title,
             gradient_x: WINDOW_WIDTH + 5,
             click: Instant::now(),
-            saved: false,
+            saved: !crate::save::list().is_empty(),
+            options: false,
+            settings: crate::game::Settings::load(),
             note: None,
         };
         menu.draw();
@@ -102,6 +105,10 @@ impl MainMenu {
 
         let xm = sxm();
         let mut y = self.row(38);
+        if self.options {
+            crate::game::draw_game_options(&self.settings, &mut self.con, xm - 10, y, false);
+            return;
+        }
         for (key, text) in [('C', "Continue"), ('L', "Load Campaign"), ('N', "New Campaign"), ('O', "Options"), ('Q', "Quit")] {
             let disabled = (key == 'C' || key == 'L') && !self.saved;
             let (kc, tc) = if disabled { (color::DARK_GREY, color::DARK_GREY) } else { (ACTION_KEY_COL, color::LIGHTER_GREY) };
@@ -154,12 +161,26 @@ impl MainMenu {
         true
     }
 
+    /// A key on the menu; in the options, Escape (`\u{1b}`) goes back.
     pub fn key(&mut self, c: char) -> Option<Choice> {
+        if self.options {
+            if c == '\u{1b}' {
+                self.options = false;
+            } else {
+                self.settings.change(c.to_ascii_lowercase());
+            }
+            self.draw();
+            return None;
+        }
         let choice = match c.to_ascii_lowercase() {
             'c' if self.saved => Choice::Continue,
             'l' if self.saved => Choice::Load,
             'n' => Choice::NewCampaign,
-            'o' => Choice::Options,
+            'o' => {
+                self.options = true;
+                self.draw();
+                return None;
+            }
             'q' => Choice::Quit,
             _ => return None,
         };

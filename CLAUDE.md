@@ -10,7 +10,17 @@ Status: started 2026-10-19, after Armoured Commander I was finished
 (`../armoured-commander`). The shared layer is taken over from I (console,
 colours, dice, terminal); II's glyph table, its art built in and browsable
 with `--art`, and the main menu (studio logo, title with a random tank,
-the sweeping light) work. Nothing of the game itself yet.
+the sweeping light, the options) work. 2026-10-19, second session: the
+definitions, the crew, tank and weapon model, New Campaign (campaign and
+tank selection), the calendar with its four tabs (the day's mission, crew
+and tank, journal, field hospital), the crewman report and skills, swap
+positions, nicknames and tank names, the ammunition load, the start and
+end of each day (injuries, levels, the field hospital, crew replacement,
+returning crewmen, a new tank on refits), the end of the campaign with its
+summary and log, and saves (Save and Quit, Continue, Load). Each combat
+day is generated (mission, weather, the 41 zones' terrain, roads, rivers,
+the player's squad) but the day map is not ported yet, so the day passes
+without action. Next: the campaign day map, then the battle.
 
 ## Source and licence
 
@@ -71,8 +81,37 @@ line for line. Taken over from I unchanged unless said: `console.rs`
   and the poppy, drawn as big as fits in its proportions (90x30 at
   100x30), the menu and copyright as terminal text at the original's rows
   scaled, and the light sweeping across the title letters
-  (`AnimateMainMenu`). Continue and Load are greyed (no saves yet); New
-  Campaign and Options say they are not ported.
+  (`AnimateMainMenu`). Options open in place of the menu, as in the
+  original. Continue and Load are greyed without a saved campaign.
+- `src/defs.rs`: the JSON definitions, built in, read with serde_json's
+  `preserve_order`, because the original rolls odds by walking its
+  dictionaries in their file order (mission odds, terrain, weather).
+  `data/engine_defs.json` holds the constants from the top of armcom2.py,
+  written by `tools/defs2json.py` (which runs that part of the original
+  against a stub libtcod); rerun it rather than editing the JSON.
+- `src/model.rs`: `Personnel`, `Position`, `Weapon`, `Unit`. A unit owns
+  its positions and each position owns its crewman (the original links
+  them both ways); rules that would show a message return it for the
+  caller to show.
+- `src/game.rs`: the original's globals as one `Game`, and its general
+  functions (messages, notifications, text input, the game menu and
+  options, keyboard layouts with `DeKey` and `EnKey`, settings).
+- `src/campaign.rs` (the campaign, its calendar, the selection screens,
+  `DisplayMyInfo`), `src/cday.rs` (`CampaignDay` and `CDMapHex`: making a
+  day, roads, rivers, the day map's paths, the ammunition load, crew
+  replacement), `src/calendar.rs` (the calendar screen and loop, the crew
+  screens, start and end of day, new tank, the campaign's end),
+  `src/hexes.rs` (hex geometry), `src/save.rs` (saves).
+- `src/save.rs`: as in the original, one saved game per campaign, each in
+  its own folder (`saved_campaigns/<campaign>/savegame.json` in the data
+  folder, `~/.local/share/armoured-commander-ii`); Continue loads the most
+  recently saved, Load lists them. Saved at the original's points. The
+  settings are `settings.json` beside them (the original's `armcom2.cfg`;
+  its font size option is gone, as the terminal's font is the terminal's).
+  `save::FORMAT` is bumped whenever the saved state changes shape; saves of
+  another format are not listed. The end of a campaign writes its log,
+  `ArmCom2_Campaign_Log_<time>.txt`, to the data folder (the original
+  wrote it beside the game).
 
 `armcom2 --art` browses the 125 pictures, at their own size or fitted to
 the screen (`f`). `RUST_LOG=debug armcom2 2>armcom2.log` logs every key,
@@ -85,8 +124,49 @@ A terminal cell is about twice as tall as wide. So the original's screens
 cannot be shown cell for cell: 90x60 square cells are either 180x60
 terminal cells (twice the minimum's width, and twice its height) or, in
 half blocks, 90x30, where only solid colour survives and text does not.
-The screens need laying out again, as I's did, and the layout is to be
-agreed with David before the game's screens are translated.
+The screens need laying out again, as I's did. David left the layout to
+me (2026-10-19: "since you just finished AC-I I think you have a good idea
+of what you are working on"); the decisions and reasons, to be looked at
+in play:
+
+- **Pages:** every screen that is not a map (menus, the calendar,
+  selection screens, the crewman report, windows) is laid out on a page of
+  the minimum screen, 100x30, centred on bigger screens (I's windows did
+  the same). Pop-ups (messages, notifications, text input, the game menu,
+  the skill menu) are centred on the screen over the darkened page. The
+  maps will use the whole terminal, as I's do.
+- **Text is one character a column**, so the original's text panels keep
+  their widths (25 columns for unit info and crew), and the original's
+  rows are packed into 30: blank rows go, frames become the page's own.
+- **Art goes through `art.rs`**: portraits (24x8 square cells) are 24x4
+  in the terminal, half their own size, which keeps their proportions and
+  puts their markings in as characters; flags (29x14) are 29x7.
+- **`DisplayMyInfo`** (unit info) is 25x11, 15 with status: the portrait
+  four rows instead of eight. **`DisplayCrew`** is four rows a position,
+  the original's five less its blank row, with first name and surname on
+  one row: six positions in 24 rows.
+- **The calendar:** the day outline (24x17) and command menu (24x10) in
+  the left column as in the original, the main panel 73x28 beside them;
+  the frame is drawn as lines, as `calendar_bkg.xp` is only lines. The
+  sunrise gradient is the original's 58 rows scaled to 28.
+- **Campaign and tank selection:** the list on the left, the selected one
+  in a framed middle column, the options (campaign) or the tank's
+  description (tank) in the right column; when replacing a tank, the
+  current one at the top right.
+- **Crewman report:** commands on the left, the report in the middle
+  (skills scroll if there are more than eight), level, skill description
+  and injuries on the right.
+- **Ammunition load:** the stores drawn 20 shells to a row instead of 9
+  (the biggest player gun, 180 rounds and its 15% extra, is 11 rows), the
+  ready rack 10 to a row.
+- **The battle (next):** I's scalable hex map (59x29 at 100x30, bigger
+  hexes on bigger screens) in the middle; a 22-column left column (unit
+  info and crew compacted as above, the command menu), a 17-column right
+  column (context, time, weather); the columns widen to the original's 25
+  and 21 on wider screens.
+- **The day map (after the calendar):** to be decided when it is ported;
+  its 41 pointy-topped zones are 7x9 square cells each, about 14x9
+  terminal cells at their own shape.
 
 The original's screens, from its consoles:
 
@@ -108,30 +188,69 @@ The battle map is the same shape as I's encounter map: the player's hex
 and three rings around it, 37 flat-topped hexes (`GetHexDistance <= 3`;
 a fourth ring is generated but not shown), plotted `x = hx*7 + 26`,
 `y = hy*6 + hx*3 + 21` in square cells. I's terminal hexes (`hex_k`, 59x29
-at 100x30, 81x43 or 103x57 on bigger screens) fit it as they are; their
-spacing is a little narrower for its height than II's 7 by 6. The squeeze
-is the text: the left column stacks tank, crew and commands to 54 rows,
-which at 30 rows must be compacted as I's tank and crew panel was, and
-59 columns of map plus II's 25 and 18 to 21-column columns is more than
-100.
+at 100x30, 81x43 or 103x57 on bigger screens) fit it as they are.
 
-What carries over from I's layout work: the text panels are text, one
-character a column, so the 25-column columns fit as they are (I's left
-panel is 40); the hex maps get terminal hexes drawn for the cell shape,
-growing with the screen (I's `hex_k` scales); art goes through `art.rs`.
-A first proposal, for David:
+## Bugs in the original
 
-- **Scenario at 100x30:** left column 26 (tank, crew, commands), right
-  column 22 (context, time, weather), the hex map between them, ~50x29,
-  in terminal hexes like I's; the unit strip as the map's bottom rows.
-  Bigger screens grow the map and the text columns' length.
-- **Campaign day:** the same two columns either side of the day map, its
-  pointy-topped hexes redrawn for the terminal (they are 7x9 square cells,
-  about 14x9 terminal cells at their own shape; the 41 hexes make a map
-  ~5 hexes wide and 9 tall, which wants scrolling or smaller hexes at 30
-  rows).
-- **Calendar and windows:** text, laid out in 100x30 and centred on
-  bigger screens, with the art (portraits, flags) through `art.rs`.
+The rule, as for I (David, 2026-10-18): fix what only affects display or
+crashes (or stops the game); keep what changes the game's odds, and list
+it here for David to decide.
+
+Fixed (crashes, hangs, display):
+
+- Canada's Best has a refitting week starting on a combat week's last day
+  (1945.03.04), so the date can be in the calendar twice; the calendar
+  steps from the first copy to the second, the same date, and never moves
+  on. The port steps on from the last copy.
+- With Player Commander off, ending a day crashed (`commander_in_a_coma`
+  was only set with it on, and read either way).
+- The field hospital tab's crewman menu with nobody in hospital crashed.
+- Scrolling the journal up from the top crashed (an unset length), and
+  scrolling clamped to the entries less 50, so it never scrolled; it
+  scrolls within the entries now.
+- `DoCrewReplacementCheck`'s second pass, for crewmen displaced by those
+  going back to their own positions, crashed (it read a crewman's
+  `.crewman`); each goes back to his own position, or an empty one.
+- `GenerateMission`'s fallback read `self.current_week` (a campaign day
+  has none): the first mission instead. Not reachable with the shipped
+  campaigns.
+- `GetHexLine` divided by the distance, so a line from a hex to itself
+  crashed; it is that hex.
+- Birthdays were `choice(monthrange(...))`, the month's first weekday or
+  its length, so day 0 to 6 or the last day; any day of the month now.
+- Crew names went through IBM850, which the font does not follow, so some
+  letters came out wrong (`glyph::encode_name`).
+
+Kept (they change the odds or the course of a campaign), for David:
+
+- A crewman with no injuries is sent to the field hospital one time in
+  1001 (`roll <= 0.0` when the roll is 0.0), for 0 days; he returns
+  next day (the returning crewman screen), but if he is the player
+  commander with Player Commander on, the commander's hospital stay jumps
+  the calendar ahead (below).
+- `CommanderInAComa` rolls the length of the stay and then releases the
+  commander ten days on regardless; it walks the calendar without moving
+  the date, so the campaign week is not advanced (it catches up one week
+  a day after), and it lands on the combat day before the first one past
+  the release date (which can be the same day again).
+- A new crewman's stats come from `sample(range(3), 2)` of
+  `['Perception', 'Morale', 'Grit', 'Knowledge']`: two of the first three
+  start at 3, Knowledge never.
+- `TankSelectionMenu` reads each tank's rarity and does nothing with it:
+  every tank on the campaign's list is always offered.
+- After a refit the calendar moves on twice from the same day, landing on
+  the refitting day again; the next Enter moves on from it (the refit day
+  is logged with the previous day's records).
+- Swapping positions does not change a crewman's CE or BU status until
+  something next sets it.
+- New crewmen in a squad unit get no national skills (only the player's
+  unit does), and a returning crewman keeps his hospital stay noted.
+- To look at with the battle: a grazing hit's stun test compares the
+  condition with a list (`!= ['Good Order', 'Stunned']`, always true);
+  `DoCrewRecoveryCheck` sets the campaign day's condition instead of the
+  crewman's, so crew never recover after a battle, and its message reads
+  an unset `location` (a crash); `DoInjuryCheck` has the same unset
+  `location`.
 
 Notes from the first look:
 
@@ -155,18 +274,26 @@ Notes from the first look:
 ## Tests
 
 `cargo test`: the glyph table and its measured patterns, every art file
-loads at its size, the art renderer's pixels, transparency and fitting,
-the menu fitting 100x30, and the tank portraits being there.
+loads at its size, the art renderer, the menu fitting 100x30, every
+definition loads (and in order), every unit type builds with its crew and
+default loads, the hex geometry, every campaign's calendar and days (each
+day map can be crossed, roads link both ways), saves loading back the
+same, scripted crew screens, and ten whole campaigns from New Campaign to
+the end of the calendar, headless (`ARMCOM2_CAMPAIGNS=400 cargo test
+--release campaigns` for more, about 15 seconds). Headless runs take
+scripted keys (`Game::script`) or make each screen's default choice.
+
+`ARMCOM2_SHOTS=<dir> cargo test shots` writes the calendar, selection and
+crew screens as text, to look at their layouts without a terminal.
 
 ## Order of work
 
 1. Done: shared layer from I, glyphs, art, main menu.
-2. Agree the terminal layout of the scenario, campaign day and calendar
-   screens (see the design problem above).
-3. The definitions (JSON) and the rules, in the order the original runs:
-   new campaign, calendar, campaign day, scenario.
-4. Saves (several, per campaign folder), settings, sound and the theme
-   tune, keyboard layouts.
+2. Done: the terminal layout (above).
+3. Done: the definitions, the model, New Campaign, the calendar, saves,
+   settings. Next: the campaign day map, then the scenario (battle).
+4. Then sound and the theme tune (I's `sound.rs`, with rodio's Vorbis
+   feature), release builds.
 
 ## House conventions
 

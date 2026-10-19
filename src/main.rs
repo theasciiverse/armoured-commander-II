@@ -3,11 +3,19 @@
 #![allow(dead_code)]
 
 mod art;
+mod calendar;
+mod campaign;
+mod cday;
 mod color;
 mod console;
+mod defs;
+mod game;
 mod glyph;
+mod hexes;
 mod layout;
+mod model;
 mod rng;
+mod save;
 mod title;
 mod ui;
 mod xp;
@@ -22,8 +30,9 @@ use title::{Choice, MainMenu};
 const HELP: &str = "armcom2 [--art]
 
 Armoured Commander II, the World War II tank commander roguelike by
-Gregory Adam Scott, on its way to the terminal. Early port: the main menu
-runs; the campaigns do not yet.
+Gregory Adam Scott, on its way to the terminal. Being ported: New
+Campaign, the calendar, the crew and the saves work; the day map and the
+battles do not yet, so each combat day passes without action.
 
   --art   browse the game's REXPaint art (portraits, flags, maps);
           left/right to change picture, f to switch between its own size
@@ -116,6 +125,30 @@ fn art_mode(index: usize, fit: bool) -> Mode {
 
 use color::Color;
 
+#[derive(Debug, Clone, Copy)]
+enum Play {
+    New,
+    Continue,
+    Load,
+}
+
+/// A campaign from the main menu until it ends or the player saves and
+/// quits; the terminal is the campaign's while it runs.
+fn play_campaign(terminal: ratatui::DefaultTerminal, what: Play, rng: &mut Rng) -> io::Result<ratatui::DefaultTerminal> {
+    let mut g = game::Game::new(ui::Screen::new(Some(terminal)), Rng::new(rng.int(1, i32::MAX) as u64));
+    let go = match what {
+        Play::New => g.start_new_campaign(),
+        Play::Continue => g.load_campaign_menu(true),
+        Play::Load => g.load_campaign_menu(false),
+    };
+    if go {
+        g.do_campaign_calendar_loop();
+    }
+    let mut terminal = g.scr.into_terminal().expect("the campaign hands the terminal back");
+    terminal.clear()?;
+    Ok(terminal)
+}
+
 fn run(mut terminal: ratatui::DefaultTerminal, mut mode: Mode, rng: &mut Rng) -> io::Result<()> {
     let mut snapshot = Instant::now();
     loop {
@@ -176,19 +209,24 @@ fn run(mut terminal: ratatui::DefaultTerminal, mut mode: Mode, rng: &mut Rng) ->
                 log::info!("switch: menu");
             }
             Mode::Menu(menu) => {
-                let KeyCode::Char(c) = key.code else { continue };
-                match menu.key(c) {
-                    Some(Choice::Quit) => return Ok(()),
-                    Some(Choice::NewCampaign | Choice::Continue | Choice::Load) => {
-                        menu.note = Some("The campaigns are not ported yet.".into());
-                        menu.draw();
-                    }
-                    Some(Choice::Options) => {
-                        menu.note = Some("The options are not ported yet.".into());
-                        menu.draw();
-                    }
-                    None => {}
-                }
+                let c = match key.code {
+                    KeyCode::Char(c) => c,
+                    KeyCode::Esc => '\u{1b}',
+                    _ => continue,
+                };
+                let choice = menu.key(c);
+                let Some(choice) = choice else { continue };
+                let what = match choice {
+                    Choice::Quit => return Ok(()),
+                    Choice::NewCampaign => Play::New,
+                    Choice::Continue => Play::Continue,
+                    Choice::Load => Play::Load,
+                };
+                log::info!("switch: campaign ({what:?})");
+                terminal = play_campaign(terminal, what, rng)?;
+                fit_screen();
+                mode = Mode::Menu(Box::new(MainMenu::new(rng)));
+                log::info!("switch: menu");
             }
             Mode::Art { index, fit, .. } => {
                 let n = xp::FILES.len();

@@ -117,7 +117,16 @@ impl Console {
 
     /// `console_print_ex` with `BKGND_NONE`.
     pub fn print_ex(&mut self, x: i32, y: i32, align: Align, text: &str) {
-        let codes = glyph::encode(text);
+        self.print_codes(x, y, align, glyph::encode(text));
+    }
+
+    /// `print_ex` for text from the data (names, descriptions), whose
+    /// letters are looked up in the font (`glyph::encode_name`).
+    pub fn print_name(&mut self, x: i32, y: i32, align: Align, text: &str) {
+        self.print_codes(x, y, align, glyph::encode_name(text));
+    }
+
+    fn print_codes(&mut self, x: i32, y: i32, align: Align, codes: Vec<u16>) {
         let width = codes.iter().filter(|&&c| !is_control(c)).count() as i32;
         let mut cx = match align {
             Align::Left => x,

@@ -32,3 +32,17 @@ pub fn sh() -> i32 {
 pub fn sxm() -> i32 {
     sw() / 2
 }
+
+/// Screens other than the maps (menus, the calendar, windows) are laid out
+/// on a page of the smallest screen, 100x30, centred on bigger screens.
+pub const PAGE_W: i32 = MIN_WIDTH;
+pub const PAGE_H: i32 = MIN_HEIGHT;
+
+/// Where the page's (0, 0) is on the screen.
+pub fn page_x() -> i32 {
+    (sw() - PAGE_W) / 2
+}
+
+pub fn page_y() -> i32 {
+    (sh() - PAGE_H) / 2
+}
