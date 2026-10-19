@@ -35,7 +35,8 @@ pub const RIGHT_W: i32 = 29;
 
 pub const DIRT_ROAD_COL: Color = Color(80, 50, 20);
 pub const STONE_ROAD_COL: Color = Color(110, 110, 110);
-pub const RIVER_COL: Color = Color(0, 0, 140);
+/// The original's (0, 0, 140) is lost on a dark terminal; brighter here.
+pub const RIVER_COL: Color = Color(20, 60, 190);
 pub const ALLIED_UNIT_COL: Color = Color(120, 120, 255);
 pub const ENEMY_UNIT_COL: Color = Color(255, 20, 20);
 
@@ -193,7 +194,11 @@ pub fn build_day_map_in(cd: &crate::cday::CampaignDay, l: DayLayout) -> DayMap {
 
     let snow = ["Snow", "Deep Snow"].contains(&cd.weather.ground.as_str());
     let bg_col = if snow { Color(158, 158, 158) } else { Color(0, 64, 0) };
-    let edge_fg = if snow { Color(0, 89, 178) } else { Color(0, 102, 0) };
+    // the original's dotted edges (0, 102, 0 on 0, 64, 0) read as lines in
+    // its 8-pixel font, not in a terminal: a darker ground and brighter
+    // dots, so each zone has an outline
+    let edge_fg = if snow { Color(40, 80, 150) } else { Color(110, 170, 110) };
+    let edge_bg = if snow { Color(118, 118, 118) } else { Color(0, 36, 0) };
     for y in 0..h {
         for x in 0..w {
             if at(x, y).is_some() {
@@ -202,7 +207,7 @@ pub fn build_day_map_in(cd: &crate::cday::CampaignDay, l: DayLayout) -> DayMap {
         }
     }
     for ((x, y), _, _) in &edges {
-        con.put_char_ex(*x, *y, 250, edge_fg, bg_col);
+        con.put_char_ex(*x, *y, 250, edge_fg, edge_bg);
     }
 
     // terrain, from each zone's own seed
