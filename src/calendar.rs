@@ -1762,6 +1762,27 @@ mod tests {
         }
     }
 
+    /// Whole campaigns with every screen drawn, battles too, at three
+    /// screen sizes. It changes the global screen size, so it runs on its
+    /// own: `cargo test --release -- --ignored --test-threads=1`
+    /// (`ARMCOM2_CAMPAIGNS=n` per size, default 6).
+    #[test]
+    #[ignore]
+    fn campaigns_drawn_at_every_size() {
+        let n: u64 = std::env::var("ARMCOM2_CAMPAIGNS").ok().and_then(|v| v.parse().ok()).unwrap_or(6);
+        for (w, h) in [(100, 30), (150, 48), (220, 70)] {
+            crate::layout::set_screen_size(w, h);
+            for seed in 1..=n {
+                let mut g = Game::new(crate::ui::Screen::headless(), crate::rng::Rng::new(seed * 7 + w as u64));
+                g.render_headless = true;
+                assert!(g.start_new_campaign());
+                g.do_campaign_calendar_loop();
+                assert_eq!((g.root.w, g.root.h), (w, h));
+            }
+        }
+        crate::layout::set_screen_size(100, 30);
+    }
+
     #[test]
     fn scripted_crew_screens() {
         let mut g = new_game("poland_campaign", 5);

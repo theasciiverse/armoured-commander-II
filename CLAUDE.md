@@ -388,6 +388,11 @@ each day played on the map and every battle fought by the autopilot
 minute and a half; `ARMCOM2_TRACE=1` prints each campaign's records). Headless runs take
 scripted keys (`Game::script`) or make each screen's default choice.
 
+`cargo test --release -- --ignored --test-threads=1` adds whole
+campaigns with every screen drawn, battles too, at 100x30, 150x48 and
+220x70 (`ARMCOM2_CAMPAIGNS=n` per size; it changes the global screen
+size, so it runs alone).
+
 `ARMCOM2_SHOTS=<dir> cargo test shot` writes the calendar, selection,
 crew and day map screens as text, to look at their layouts without a terminal.
 
