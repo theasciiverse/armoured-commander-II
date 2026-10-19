@@ -1,0 +1,94 @@
+{
+	"None": {
+		"desc" : "Crewman cannot act",
+		"spotting_allowed" : false
+	},
+	
+	"Spot": {
+		"desc" : "Scan terrain for enemies",
+		"spotting_allowed" : true
+	},
+	
+	"Direct Movement" : {
+		"desc" : "Direct the movement of the vehicle",
+		"position_list" : ["Commander", "Commander/Gunner"],
+		"spotting_allowed" : true
+	},
+	
+	"Direct Fire" : {
+		"desc" : "Direct fire against enemy targets",
+		"position_list" : ["Commander"],
+		"spotting_allowed" : true
+	},
+	
+	"Smoke Grenade" : {
+		"desc" : "Throw a smoke-emitting grenade out of the tank",
+		"position_list" : ["Commander", "Commander/Gunner"],
+		"spotting_allowed" : false
+	},
+	
+	"Operate Gun" : {
+		"desc" : "Operate a main gun and the turret",
+		"spotting_allowed" : false
+	},
+	
+	"Operate MG" : {
+		"desc" : "Operate the MG from this position",
+		"spotting_allowed" : false
+	},
+	
+	"Reload" : {
+		"desc" : "Assist in reloading the main gun, increasing fire rate",
+		"position_list" : ["Loader"],
+		"spotting_allowed" : false
+	},
+	
+	"Manage Ready Rack" : {
+		"desc" : "Add or remove ammo from the Ready Rack",
+		"spotting_allowed" : false
+	},
+	
+	"Drive" : {
+		"desc" : "Move forward or backward, pivot hull, attempt to gain Hull Down, or reposition within the same hex",
+		"position_list" : ["Driver"],
+		"spotting_allowed" : false
+	},
+	
+	"Overrun" : {
+		"desc" : "Move forward into close range with enemy infantry or guns",
+		"position_list" : ["Driver"],
+		"spotting_allowed" : false
+	},
+	
+	"Attempt Unbog" : {
+		"desc" : "Attempt to free the vehicle from being bogged down",
+		"position_list" : ["Driver"],
+		"spotting_allowed" : false
+	},
+	
+	"Withdraw" : {
+		"desc" : "Withdraw from the battlefield, moving into an adjacent map hex",
+		"position_list" : ["Driver"],
+		"spotting_allowed" : true
+	},
+	
+	"Abandon Tank" : {
+		"desc" : "All crew bail out of the tank and retreat to friendly lines",
+		"spotting_allowed" : false
+	},
+	
+	"First Aid" : {
+		"desc" : "Adds recovery bonus to any crewman that is Stunned, Unconscious, or has a Critical wound",
+		"spotting_allowed" : false
+	},
+	
+	"Swap Position" : {
+		"desc" : "Swap positions in the tank with another crewman, or take up a vacant position",
+		"spotting_allowed" : false
+	},
+	
+	"Fire Smoke Mortar" : {
+		"desc" : "Fire the smoke mortar, creating concealing smoke in front of the turret",
+		"spotting_allowed" : false
+	}
+}

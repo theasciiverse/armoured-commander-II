@@ -1,0 +1,162 @@
+{
+	"name" : "Battle of France (Germany)",
+	"start_date" : "1940.05.10",
+	"end_date" : "1940.06.16",
+	"player_nation" : "Germany",
+	"enemy_nations" : ["France", "United Kingdom"],
+	"region" : "Northwestern Europe",
+	"desc" : "After months of a 'Phoney War', Germany has attacked through the Low Countries. Lead your battlegroup over the border and into France.",
+	"player_unit_list" : [
+		"Panzer II A", "Panzer 35(t)", "Panzer 38(t) A", "Panzer III D",
+		"Panzer III F", "Panzer IV A", "Panzer IV C", "Panzer IV D",
+		"StuG III B", "Panzerjager I"
+	],
+	"player_squad_list" : {
+		"Panzer 38(t) A" : ["Panzer II A", "Panzer 38(t) A"]
+	},
+	"national_skills" : [
+		"Blitzkrieg"
+	],
+	"player_air_support": [
+		"Ju 87B Stuka"
+	],
+	"player_arty_support": [
+		"7.5cm leIG 18"
+	],
+	"enemy_arty_support": [
+		"75mm mle 1897", "75mm mle 1928", "OQF 25-Pounder", "OQF 4.5\" Howitzer",
+		"105mm C mle 1935"
+	],
+	"enemy_unit_list" : {
+		"France" : [
+			"Renault FT", "Renault FT (MG)",
+			"H35", "H35 (Late)", "R35 (Late)",
+			"SOMUA S35",
+			"Char B-1 Bis",
+			"AMD 35",
+			"SA-L 34",
+			"75mm mle 1897", "75mm mle 1928", "105mm C mle 1935",
+			"Riflemen", "Motorcycle MG Team", "HMG Team", "AT Rifle Team",
+			"Laffly S20TL", "Citroen 23"
+		],
+		"United Kingdom" : [
+			"Mk VI B", "Mk VI C",
+			"A9 Cruiser Mk I", "A9 Cruiser Mk I CS", "A10 Cruiser Mk II", "A13 Mk I", "A13 Mk II",
+			"A11", "A12",
+			"Morris CS9 (MG)", "Daimler Scout Car",
+			"OQF 2-Pounder",
+			"OQF 18-Pounder", "OQF 25-Pounder", "OQF 4.5\" Howitzer",
+			"OQF 3.7\" AA Gun",
+			"Riflemen", "Motorcycle MG Team", "HMG Team", "AT Rifle Team",
+			"Morris 15 cwt"
+		]
+	},
+	"enemy_unit_class_odds" : {
+		"Light Tank" : "80",
+		"Medium Tank" : "50",
+		"Heavy Tank" : "20",
+		"Assault Gun" : "70",
+		"Tank Destroyer" : "50",
+		"Armoured Car" : "80",
+		"Anti-Tank Gun" : "30",
+		"Artillery Gun" : "15",
+		"Anti-Aircraft Gun" : "5",
+		"Armoured Personnel Carrier" : "75",
+		"Truck" : "80",
+		"Infantry Squad" : "100",
+		"MG Team" : "80",
+		"ATR Team" : "90",
+		"Motorcycle Team" : "85"
+	},
+	"decorations_list" : {
+		"700" : "Iron Cross Second Class",
+		"900" : "Iron Cross First Class",
+		"1000" : "Knight's Cross",
+		"1100" : "Knight's Cross with Oak Leaves"
+	},
+	"combat_days" : 18,
+	"calendar_weeks": [
+		{
+			"start_date" : "1940.05.10",
+			"day_start" : "06:15",
+			"day_end" : "21:15",
+			"combat_chance" : 80,
+			"average_resistance" : "8",
+			"week_title" : "Fall Gelb",
+			"mission_odds" : {
+				"Advance" : "25",
+				"Spearhead" : "75"
+			},
+			"enemy_nations" : ["France", "United Kingdom"],
+			"air_support_level" : 80.0,
+			"arty_support_level" : 80.0
+		},
+		{
+			"start_date" : "1940.05.17",
+			"day_start" : "06:00",
+			"day_end" : "21:30",
+			"combat_chance" : 80,
+			"average_resistance" : "8",
+			"week_title" : "Stalemate",
+			"mission_odds" : {
+				"Advance" : "25",
+				"Battle" : "10",
+				"Spearhead" : "65"
+			},
+			"enemy_nations" : ["France", "United Kingdom"],
+			"air_support_level" : 80.0,
+			"arty_support_level" : 60.0
+		},
+		{
+			"start_date" : "1940.05.24",
+			"end_date" : "1944.05.30",
+			"refitting" : "TRUE"
+		},
+		{
+			"start_date" : "1940.05.31",
+			"day_start" : "06:00",
+			"day_end" : "21:45",
+			"combat_chance" : 80,
+			"average_resistance" : "8",
+			"week_title" : "Second Offensive",
+			"mission_odds" : {
+				"Advance" : "50",
+				"Battle" : "50"
+			},
+			"enemy_nations" : ["France", "United Kingdom"],
+			"air_support_level" : 80.0,
+			"arty_support_level" : 80.0
+		},
+		{
+			"start_date" : "1940.06.07",
+			"day_start" : "05:45",
+			"day_end" : "21:45",
+			"combat_chance" : 80,
+			"average_resistance" : "8",
+			"week_title" : "Fall Rot",
+			"mission_odds" : {
+				"Advance" : "95",
+				"Battle" : "5"
+			},
+			"enemy_nations" : ["France", "United Kingdom"],
+			"air_support_level" : 80.0,
+			"arty_support_level" : 80.0
+		},
+		{
+			"start_date" : "1940.06.14",
+			"day_start" : "05:45",
+			"day_end" : "21:45",
+			"combat_chance" : 80,
+			"average_resistance" : "8",
+			"week_title" : "Fall of France",
+			"mission_odds" : {
+				"Advance" : "70",
+				"Battle" : "10",
+				"Spearhead" : "30"
+			},
+			"enemy_nations" : ["France", "United Kingdom"],
+			"air_support_level" : 80.0,
+			"arty_support_level" : 80.0
+		}
+	]
+}

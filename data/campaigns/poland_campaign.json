@@ -1,0 +1,149 @@
+{
+	"name" : "The Poland Campaign",
+	"start_date" : "1939.09.01",
+	"end_date" : "1939.10.06",
+	"player_nation" : "Germany",
+	"enemy_nations" : ["Poland"],
+	"region" : "Northeastern Europe",
+	"desc" : "Join the 3rd Panzer Division in the invasion of Poland, 1939.",
+	"player_unit_list" : [
+		"Panzer II A", "Panzer 35(t)", "Panzer 38(t) A", "Panzer III D",
+		"Panzer III F"
+	],
+	"player_squad_list" : {
+		"Panzer 38(t) A" : ["Panzer II A", "Panzer 38(t) A"]
+	},
+	"national_skills" : [
+		"Blitzkrieg"
+	],
+	"player_air_support": [
+		"Ju 87B Stuka"
+	],
+	"player_arty_support": [
+		"7.5cm leIG 18"
+	],
+	"enemy_arty_support": [
+		"75mm wz. 02/26", "105mm wz. 29"
+	],
+	"enemy_unit_list" : {
+		"Poland" : [
+			"TK-3", "TKS", "TKS (20mm)", "Renault FT", "Renault FT (MG)",
+			"Vickers 6-Ton Mark E", "7TP",
+			"wz. 34 (MG)", "wz. 34 (37mm)", "37mm wz. 36", "75mm wz. 02/26",
+			"75mm wz. 97/25", "Polski Fiat 621", "Riflemen", "HMG Team",
+			"AT Rifle Team", "Light Artillery Car"
+		]
+	},
+	"enemy_unit_class_odds" : {
+		"Tankette" : "40",
+		"Light Tank" : "25",
+		"Armoured Car" : "80",
+		"Anti-Tank Gun" : "60",
+		"Artillery Gun" : "20",
+		"Anti-Aircraft Gun" : "25",
+		"Truck" : "80",
+		"Infantry Squad" : "100",
+		"MG Team" : "80",
+		"ATR Team" : "60",
+		"Armoured Train Car" : "10"
+	},
+	"decorations_list" : {
+		"700" : "Iron Cross Second Class",
+		"900" : "Iron Cross First Class",
+		"1000" : "Knight's Cross",
+		"1100" : "Knight's Cross with Oak Leaves"
+	},
+	"combat_days" : 16,
+	"calendar_weeks": [
+		{
+			"start_date" : "1939.09.01",
+			"day_start" : "05:30",
+			"day_end" : "18:15",
+			"combat_chance" : 80,
+			"average_resistance" : "7",
+			"week_title" : "Over the Polish Border",
+			"week_description" : "The first major engagement of the new German panzerwaffe has begun. Lead your tank across the border and into Polish territory.",
+			"mission_odds" : {
+				"Advance" : "25",
+				"Battle" : "5",
+				"Spearhead" : "70"
+			},
+			"enemy_nations" : ["Poland"],
+			"air_support_level" : 80.0,
+			"arty_support_level" : 50.0,
+			"terrain_odds_modifier" : {
+				"Forest" : 30
+			}
+		},
+		{
+			"start_date" : "1939.09.08",
+			"day_start" : "05:30",
+			"day_end" : "18:15",
+			"combat_chance" : 70,
+			"average_resistance" : "5",
+			"week_title" : "Into Western Poland",
+			"mission_odds" : {
+				"Advance" : "25",
+				"Battle" : "15",
+				"Spearhead" : "60"
+			},
+			"enemy_nations" : ["Poland"],
+			"air_support_level" : 70.0,
+			"arty_support_level" : 50.0,
+			"enemy_class_odds_modifier" : {
+				"Armoured Car" : "50"
+			}
+		},
+		{
+			"start_date" : "1939.09.15",
+			"day_start" : "05:30",
+			"day_end" : "18:15",
+			"combat_chance" : 60,
+			"average_resistance" : "4",
+			"week_title" : "Breaking Resistance",
+			"mission_odds" : {
+				"Advance" : "25",
+				"Battle" : "35",
+				"Spearhead" : "40"
+			},
+			"enemy_nations" : ["Poland"],
+			"air_support_level" : 70.0,
+			"arty_support_level" : 30.0,
+			"enemy_class_odds_modifier" : {
+				"Anti-Tank Gun" : "40"
+			}
+		},
+		{
+			"start_date" : "1939.09.22",
+			"day_start" : "05:30",
+			"day_end" : "18:15",
+			"combat_chance" : 50,
+			"average_resistance" : "4",
+			"week_title" : "Mopping Up",
+			"mission_odds" : {
+				"Advance" : "30",
+				"Battle" : "20",
+				"Counterattack" : "10",
+				"Spearhead" : "40"
+			},
+			"enemy_nations" : ["Poland"],
+			"air_support_level" : 70.0,
+			"arty_support_level" : 50.0
+		},
+		{
+			"start_date" : "1939.09.29",
+			"day_start" : "06:30",
+			"day_end" : "17:15",
+			"combat_chance" : 50,
+			"average_resistance" : "3",
+			"week_title" : "Taking the Capital",
+			"mission_odds" : {
+				"Advance" : "80",
+				"Spearhead" : "20"
+			},
+			"enemy_nations" : ["Poland"],
+			"air_support_level" : 70.0,
+			"arty_support_level" : 60.0
+		}
+	]
+}

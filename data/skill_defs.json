@@ -1,0 +1,155 @@
+{
+	"Fire Spotter": {
+		"desc" : "Slightly increases effect of Direct Fire action.",
+		"position_list" : ["Commander"]
+	},
+	
+	"MG Spotter": {
+		"desc" : "Greatly increases effect of Direct Fire action when attacking with a Machine Gun.",
+		"position_list" : ["Commander"],
+		"prerequisite" : "Fire Spotter"
+	},
+	
+	"Gun Spotter": {
+		"desc" : "Greatly increases effect of Direct Fire action when attacking with a Gun.",
+		"position_list" : ["Commander"],
+		"prerequisite" : "Fire Spotter"
+	},
+	
+	"Driver Direction": {
+		"desc" : "Slightly increases effect of Direct Movement action.",
+		"position_list" : ["Commander", "Commander/Gunner"]
+	},
+	
+	"Lay of the Land": {
+		"desc" : "Greatly increases effect of Direct Movement action when attempting Hull Down.",
+		"position_list" : ["Commander", "Commander/Gunner"],
+		"prerequisite" : "Driver Direction"
+	},
+	
+	"Forward!": {
+		"desc" : "Greatly increases effect of Direct Movement action when moving forward.",
+		"position_list" : ["Commander", "Commander/Gunner"],
+		"prerequisite" : "Driver Direction"
+	},
+	
+	"Enemy Spotted!": {
+		"desc" : "Less chance of being ambushed at the start of a battle encounter.",
+		"position_list" : ["Commander", "Commander/Gunner"]
+	},
+	
+	
+	"Quick Trigger": {
+		"desc" : "Slightly increases chance of maintaining Rate of Fire when firing a Gun.",
+		"position_list" : ["Commander/Gunner", "Gunner", "Gunner/Loader"]
+	},
+	
+	"Time on Target": {
+		"desc" : "Greatly increases chance of maintaining Rate of Fire when firing a Gun at a stationary target.",
+		"position_list" : ["Commander/Gunner", "Gunner", "Gunner/Loader"],
+		"prerequisite" : "Quick Trigger"
+	},
+	
+	"Burst Fire": {
+		"desc" : "Slightly increases chance of maintaining Rate of Fire when firing a Machine Gun.",
+		"position_list" : ["Commander/Gunner", "Gunner", "Gunner/Loader", "Assistant Driver",
+		"Port MG Gunner", "Starboard MG Gunner", "MG Gunner"]
+	},
+	
+	"Crack Shot": {
+		"desc" : "Slightly increases chance to hit when firing a Gun.",
+		"position_list" : ["Commander/Gunner", "Gunner", "Gunner/Loader"]
+	},
+	
+	"Target Tracker": {
+		"desc" : "Greatly increases chance to hit firing a Gun at a moving target.",
+		"position_list" : ["Commander/Gunner", "Gunner", "Gunner/Loader"],
+		"prerequisite" : "Crack Shot"
+	},
+	
+	"Sniper": {
+		"desc" : "Greatly increases chance to hit firing a Gun at a long-range target.",
+		"position_list" : ["Commander/Gunner", "Gunner", "Gunner/Loader"],
+		"prerequisite" : "Crack Shot"
+	},
+	
+	"Target Focus": {
+		"desc" : "Reduces the effect of precipitation when firing a Gun.",
+		"position_list" : ["Commander/Gunner", "Gunner", "Gunner/Loader"],
+		"prerequisite" : "Crack Shot"
+	},
+	
+	"Knows Weak Spots": {
+		"desc" : "Slightly increases chance of scoring a Critical Hit when firing a Gun at an armoured target.",
+		"position_list" : ["Commander/Gunner", "Gunner", "Gunner/Loader"]
+	},
+	
+	"Fast Hands": {
+		"desc" : "Slightly increases chance of maintaining Rate of Fire when reloading a Gun.",
+		"position_list" : ["Loader"]
+	},
+	
+	"Quick Shifter": {
+		"desc" : "Slightly increases chance of a successful Move Forward or Backward action.",
+		"position_list" : ["Driver"]
+	},
+	
+	"Eye for Cover": {
+		"desc" : "Slightly increases chance to achieve Hull Down status after moving.",
+		"position_list" : ["Driver"]
+	},
+	
+	"Eagle Eyed": {
+		"desc" : "When hatch is open, slightly increases chance to spot and identify enemy units."
+	},
+	
+	"Gymnast": {
+		"desc" : "Slightly increases chance to successfully bail out."
+	},
+	
+	"Blitzkrieg": {
+		"desc" : "Modern warfare relies on shock attacks from fast-moving armoured and motorized units. Travel time on the Campaign Day map is reduced.",
+		"position_list" : ["Commander", "Commander/Gunner"],
+		"national_skill" : true
+	},
+	
+	"Defend the Motherland": {
+		"desc" : "The very future of your nation is at stake. Crew start with a higher morale stat.",
+		"national_skill" : true
+	},
+	
+	"Centralized Fire": {
+		"desc" : "Assault guns and artillery batteries coordinate to concentrate fire on targets. Artillery attacks are more effective and more likely to be granted.",
+		"position_list" : ["Commander", "Commander/Gunner"],
+		"national_skill" : true
+	},
+	
+	"Motti": {
+		"desc" : "Finnish troops know the terrain very well, and concentrate on isolating pockets of enemy forces. Finnish forces cannot be ambushed, and tanks are less likely to bog in snowy terrain.",
+		"position_list" : ["Commander", "Commander/Gunner"],
+		"national_skill" : true
+	},
+	
+	"Defensive Strategy": {
+		"desc" : "The French command has been planning for years for a defensive, Great War style conflict. Destroying enemy units is worth 1 extra VP, but capturing hex zones 1 less VP.",
+		"position_list" : ["Commander", "Commander/Gunner"],
+		"national_skill" : true
+	},
+	
+	"Combined Bombardment": {
+		"desc" : "British experience in the Great War led to the tactic of massed bombardments to pin down enemy infantry and guns. Artillery bombardments are more effective against these targets.",
+		"position_list" : ["Commander", "Commander/Gunner"],
+		"national_skill" : true
+	},
+	
+	"To Victory!": {
+		"desc" : "Canadian troops are all volunteers, and are highly trained and motivated, quickly gaining a reputation as assault troops. Crewmen start with a higher Grit stat.",
+		"national_skill" : true
+	},
+	
+	"Superior Firepower": {
+		"desc" : "American forces are well-supplied with ammunition, and are not afraid to use it. Rate of Fire chance for all machine gun weapons is increased.",
+		"position_list" : ["Commander", "Commander/Gunner"],
+		"national_skill" : true
+	}
+}

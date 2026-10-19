@@ -1,0 +1,398 @@
+{
+	"name" : "Canada's Best",
+	"start_date" : "1944.08.08",
+	"end_date" : "1945.05.04",
+	"player_nation" : "Canada",
+	"enemy_nations" : ["Germany"],
+	"region" : "Northwestern Europe",
+	"desc" : "Join the 4th Armoured Division as it participates in the liberation of France, Belgium, the Netherlands, and the invasion of Germany.",
+	"player_unit_list" : [
+		"Sherman II", "Sherman V", "Sherman VC"
+	],
+	"player_squad_list" : {
+		"Sherman II" : ["Sherman II", "Sherman V"],
+		"Sherman V" : ["Sherman II", "Sherman V"],
+		"Sherman VC" : ["Sherman II", "Sherman V"]
+	},
+	"national_skills" : [
+		"To Victory!"
+	],
+	"player_air_support": [
+		"Typhoon"
+	],
+	"enemy_unit_list" : {
+		"Germany" : [
+			"Panzer IV A", "Panzer IV C", "Panzer IV H", "Panzer VG", "Panzer VIe",
+			"Panzer VIe (Late)",
+			"StuG III G", "Marder II", "Marder III M", "Jagdpanzer IV", "Jagdpanzer 38(t)",
+			"Sd. Kfz. 13", "PSW 221", "PSW 222", "PSW 231 (6 rad)",
+			"PSW 231 (8 rad)", "PSW 234/2",
+			"PaK 38", "PaK 40", "PaK 43", "Opel Blitz 3-ton",
+			"Riflemen", "HMG Team"
+		]
+	},
+	"enemy_unit_class_odds" : {
+		"Light Tank" : "70",
+		"Assault Gun" : "80",
+		"Tank Destroyer" : "50",
+		"Medium Tank" : "15",
+		"Heavy Tank" : "5",
+		"Armoured Car" : "90",
+		"Anti-Tank Gun" : "35",
+		"Anti-Aircraft Gun" : "5",
+		"Truck" : "90",
+		"Infantry Squad" : "100",
+		"MG Team" : "100"
+	},
+	"decorations_list" : {
+		"4500" : "Military Medal",
+		"5000" : "Military Cross",
+		"5200" : "Distinguished Service Order",
+		"5500" : "Victoria Cross"
+	},
+	"combat_days" : 70,
+	"calendar_weeks": [
+		{
+			"start_date" : "1944.08.08",
+			"end_date" : "1944.08.10",
+			"day_start" : "05:00",
+			"day_end" : "19:15",
+			"combat_chance" : 85,
+			"week_title" : "Cintheaux",
+			"mission_odds" : {
+				"Advance" : "10",
+				"Battle" : "45",
+				"Counterattack" : "15",
+				"Spearhead" : "30"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 80.0
+		},
+		{
+			"start_date" : "1944.08.14",
+			"day_start" : "05:00",
+			"day_end" : "19:15",
+			"combat_chance" : 80,
+			"week_title" : "Laison Valley",
+			"mission_odds" : {
+				"Advance" : "35",
+				"Battle" : "25",
+				"Counterattack" : "10",
+				"Spearhead" : "30"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.08.21",
+			"day_start" : "05:00",
+			"day_end" : "19:15",
+			"combat_chance" : 40,
+			"week_title" : "Chambois and Le Newbourg",
+			"mission_odds" : {
+				"Advance" : "5",
+				"Battle" : "85",
+				"Counterattack" : "10"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.08.28",
+			"end_date" : "1944.08.30",
+			"day_start" : "05:00",
+			"day_end" : "19:15",
+			"combat_chance" : 60,
+			"week_title" : "Elbeuf-Seine Crossing",
+			"mission_odds" : {
+				"Advance" : "80",
+				"Spearhead" : "20"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.08.31",
+			"end_date" : "1944.09.02",
+			"refitting" : "TRUE"
+		},
+		{
+			"start_date" : "1944.09.09",
+			"day_start" : "05:30",
+			"day_end" : "18:15",
+			"combat_chance" : 60,
+			"week_title" : "Ghent Canal and Molentje",
+			"mission_odds" : {
+				"Advance" : "50",
+				"Battle" : "50"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.09.16",
+			"day_start" : "05:30",
+			"day_end" : "18:15",
+			"combat_chance" : 40,
+			"week_title" : "Braakman Inlet",
+			"mission_odds" : {
+				"Advance" : "70",
+				"Battle" : "10",
+				"Spearhead" : "30"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.09.23",
+			"day_start" : "05:30",
+			"day_end" : "18:15",
+			"combat_chance" : 50,
+			"week_title" : "Leopold Canal",
+			"mission_odds" : {
+				"Advance" : "40",
+				"Battle" : "30",
+				"Spearhead" : "30"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.09.30",
+			"end_date" : "1944.10.05",
+			"day_start" : "05:30",
+			"day_end" : "18:15",
+			"combat_chance" : 30,
+			"week_title" : "Regroup and Mop Up",
+			"mission_odds" : {
+				"Advance" : "90",
+				"Battle" : "10"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.10.06",
+			"end_date" : "1944.10.08",
+			"refitting" : "TRUE"
+		},
+		{
+			"start_date" : "1944.10.09",
+			"day_start" : "06:30",
+			"day_end" : "17:15",
+			"combat_chance" : 40,
+			"week_title" : "Brecht and Stroolburg",
+			"mission_odds" : {
+				"Advance" : "40",
+				"Battle" : "10",
+				"Spearhead" : "50"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.10.16",
+			"day_start" : "06:30",
+			"day_end" : "17:15",
+			"combat_chance" : 60,
+			"week_title" : "Esschen",
+			"mission_odds" : {
+				"Advance" : "50",
+				"Battle" : "10",
+				"Spearhead" : "40"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.10.23",
+			"day_start" : "06:30",
+			"day_end" : "17:15",
+			"combat_chance" : 50,
+			"week_title" : "Beveland Canal and Bergen op Zoom",
+			"mission_odds" : {
+				"Advance" : "60",
+				"Battle" : "10",
+				"Spearhead" : "30"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.10.30",
+			"day_start" : "06:30",
+			"day_end" : "17:15",
+			"combat_chance" : 70,
+			"week_title" : "Steebergen",
+			"mission_odds" : {
+				"Advance" : "40",
+				"Battle" : "50",
+				"Spearhead" : "10"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.11.06",
+			"day_start" : "07:15",
+			"day_end" : "16:15",
+			"combat_chance" : 30,
+			"week_title" : "Zijpe",
+			"mission_odds" : {
+				"Advance" : "60",
+				"Battle" : "10",
+				"Spearhead" : "30"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.11.13",
+			"end_date" : "1944.11.16",
+			"day_start" : "07:15",
+			"day_end" : "16:15",
+			"combat_chance" : 20,
+			"week_title" : "Clearing Zone of Responsibility",
+			"mission_odds" : {
+				"Advance" : "90",
+				"Battle" : "10"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1944.11.20",
+			"end_date" : "1945.01.25",
+			"refitting" : "TRUE"
+		},
+		{
+			"start_date" : "1945.01.26",
+			"end_date" : "1945.01.30",
+			"day_start" : "07:45",
+			"day_end" : "16:00",
+			"combat_chance" : 70,
+			"week_title" : "Operation Elephant",
+			"mission_odds" : {
+				"Advance" : "5",
+				"Battle" : "95"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1945.01.31",
+			"end_date" : "1945.02.25",
+			"refitting" : "TRUE"
+		},
+		{
+			"start_date" : "1945.02.26",
+			"end_date" : "1945.03.04",
+			"day_start" : "07:15",
+			"day_end" : "17:30",
+			"combat_chance" : 80,
+			"week_title" : "Hochwald Gap",
+			"mission_odds" : {
+				"Advance" : "10",
+				"Battle" : "90"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1945.03.04",
+			"end_date" : "1945.03.05",
+			"refitting" : "TRUE"
+		},
+		{
+			"start_date" : "1945.03.06",
+			"end_date" : "1945.03.10",
+			"day_start" : "06:15",
+			"day_end" : "18:00",
+			"combat_chance" : 80,
+			"week_title" : "Veen",
+			"mission_odds" : {
+				"Advance" : "10",
+				"Battle" : "90"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1945.03.11",
+			"end_date" : "1945.03.31",
+			"refitting" : "TRUE"
+		},
+		{
+			"start_date" : "1945.04.01",
+			"day_start" : "05:15",
+			"day_end" : "19:00",
+			"combat_chance" : 50,
+			"week_title" : "Eiten, Twente, Almedo, Meppen",
+			"mission_odds" : {
+				"Advance" : "40",
+				"Battle" : "50",
+				"Spearhead" : "10"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1945.04.08",
+			"day_start" : "05:15",
+			"day_end" : "19:00",
+			"combat_chance" : 40,
+			"week_title" : "Sogel",
+			"mission_odds" : {
+				"Advance" : "60",
+				"Battle" : "10",
+				"Spearhead" : "30"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1945.04.15",
+			"day_start" : "05:15",
+			"day_end" : "19:00",
+			"combat_chance" : 60,
+			"week_title" : "Edewechterdamm",
+			"mission_odds" : {
+				"Advance" : "50",
+				"Battle" : "20",
+				"Counterattack" : "20",
+				"Spearhead" : "10"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1945.04.22",
+			"day_start" : "05:15",
+			"day_end" : "19:00",
+			"combat_chance" : 50,
+			"week_title" : "Edewecht and Querenstede",
+			"mission_odds" : {
+				"Advance" : "50",
+				"Battle" : "10",
+				"Spearhead" : "40"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		},
+		{
+			"start_date" : "1945.04.29",
+			"end_date" : "1945.05.04",
+			"day_start" : "05:15",
+			"day_end" : "19:00",
+			"combat_chance" : 50,
+			"week_title" : "Bad Zwischerwahn and Oldenburg",
+			"mission_odds" : {
+				"Advance" : "30",
+				"Battle" : "10",
+				"Spearhead" : "60"
+			},
+			"enemy_nations" : ["Germany"],
+			"air_support_level" : 50.0
+		}
+	]
+}
