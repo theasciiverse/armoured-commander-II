@@ -21,9 +21,11 @@ summary and log, and saves (Save and Quit, Continue, Load). The same day,
 third session: the campaign day map (travel, recon, support requests,
 advancing fire, waiting, resupply, the crew and ready rack, abandoning
 the tank, weather changes, random events, zones won and lost, new map
-regions, the day's end and summary). Battles are not ported yet: when one
-would start, the enemy withdraws and the zone is taken as after a won
-battle. Next: the battle (`Scenario`).
+regions, the day's end and summary). Fourth session (same day): the battle
+(`Scenario`, the AI, attacks, armour, firepower, morale, crew injuries,
+the bail-out, air and artillery support, random events), so a campaign
+plays from start to end. Not yet: sound and the theme tune, release
+builds.
 
 ## Source and licence
 
@@ -99,6 +101,14 @@ line for line. Taken over from I unchanged unless said: `console.rs`
 - `src/game.rs`: the original's globals as one `Game`, and its general
   functions (messages, notifications, text input, the game menu and
   options, keyboard layouts with `DeKey` and `EnKey`, settings).
+- `src/battle.rs` (the battle's rules: the original's `Scenario`, and
+  the battle half of `Unit`, `Weapon` and `Personnel`), `src/ai.rs`
+  (`AI`), `src/battle_ui.rs` (the battle screen and its loop). A battle
+  keeps its units in one list that only grows and refers to them by
+  index; `order` keeps the original's `scenario.units` list, units
+  leaving it as they leave play, and loops over it the way Python's do.
+  The player's tank and squad are copied in at the start and back at the
+  end, as the original does.
 - `src/campaign.rs` (the campaign, its calendar, the selection screens,
   `DisplayMyInfo`), `src/cday.rs` (`CampaignDay` and `CDMapHex`: making a
   day, roads, rivers, the day map's paths, the ammunition load, crew
@@ -162,11 +172,27 @@ in play:
 - **Ammunition load:** the stores drawn 20 shells to a row instead of 9
   (the biggest player gun, 180 rounds and its 15% extra, is 11 rows), the
   ready rack 10 to a row.
-- **The battle (next):** I's scalable hex map (59x29 at 100x30, bigger
-  hexes on bigger screens) in the middle; a 22-column left column (unit
-  info and crew compacted as above, the command menu), a 17-column right
-  column (context, time, weather); the columns widen to the original's 25
-  and 21 on wider screens.
+- **The battle** (`src/battle_ui.rs`) uses the whole terminal: Armoured
+  Commander I's terminal hexes for the map (59x29 at 100x30; 81x43 or
+  103x57 when there is room), a 23-column left column and an 18-column
+  right column, both a few columns wider on wider screens. The left
+  column has the player's tank in two lines (its full `DisplayMyInfo`
+  from 45 rows up, and Tab shows it in a window at any size: Tab is not
+  in the original), the crew at three rows a position (the original's
+  four less its dashed line), and the commands. The right column has the
+  date, clock, phase and spotted status, the context panel, the weather in
+  three lines, and the unit info (the original's strip under the map):
+  the hex under the mouse, else the selected target. Hexes are dotted
+  outlines as `scen_hex.xp`, blue for the field of view or a weapon's
+  arc; units, their terrain, smoke, guns and cover are drawn at the
+  original's offsets from the hex centre (terrain spread twice as wide).
+  The attack window, which replaced the original's left column, is a
+  54x26 window over the map: attacker, description and target on the
+  left, base chance, modifiers, the final chance's bar, the roll and the
+  result on the right. The firepower window and the bail-out screen are
+  laid out the same way, smaller. Bearings and facings are still worked
+  out on the original's square-cell plot (`battle::plot_sq`), so they
+  come out as they did.
 - **The day map** (`src/daymap.rs`) uses the whole terminal: the command
   menu in a 27-column left column, time, weather, the mission and the
   zone info in a 29-column right column, the map between. Its 41
@@ -244,6 +270,13 @@ Fixed (crashes, hangs, display):
   crash on the first; here an edge zone with one road gets one (display).
 - The commander check after a battle reads the first position's crewman,
   which crashed if the position was empty.
+- In battle: the Light Artillery Car's locomotive read a week's
+  `enemy_nation` (no such key) and crashed; APCR and APDS at long range
+  passed two arguments to `append` and crashed; a crewman's critical
+  injury that killed him named an unset `location` and crashed, before a
+  battle (`DoInjuryCheck`) and after it (`DoCrewRecoveryCheck`, which
+  also called battle code with no battle); the bail-out screen wrapped a
+  `False` wound result as text and crashed (it shows OK).
 - Crew names went through IBM850, which the font does not follow, so some
   letters came out wrong (`glyph::encode_name`).
 
@@ -278,12 +311,30 @@ Kept (they change the odds or the course of a campaign), for David:
   them again that day). A zone the enemy takes from under the player is
   captured back after the battle with its VP again. An increase of enemy
   strength in an unknown zone does not reset the random event chance.
-- To look at with the battle: a grazing hit's stun test compares the
-  condition with a list (`!= ['Good Order', 'Stunned']`, always true);
-  `DoCrewRecoveryCheck` sets the campaign day's condition instead of the
-  crewman's, so crew never recover after a battle, and its message reads
-  an unset `location` (a crash); `DoInjuryCheck` has the same unset
-  `location`.
+- In battle:
+  - A grazing hit compares the condition with a list
+    (`!= ['Good Order', 'Stunned']`, always true), so it never shakes or
+    stuns.
+  - `DoCrewRecoveryCheck` sets the campaign day's condition instead of
+    the crewman's, so crewmen do not recover after a battle (they do at
+    the end of the day).
+  - Snipers: the check for the player's position compares a position with
+    names, never equal, so fate points never stop a sniper and the
+    message always names the position; the heavy rain and blizzard
+    modifier compares with a list, never equal.
+  - Enemy artillery passes over the player's side (it skips units of side
+    0 whoever is firing), so it never harms the player.
+  - The AI sets its chosen ammunition on a misspelt attribute, so a gun
+    fires the type it was last set to while the AI scored its options;
+    and after turning to fire, it fires its last weapon instead of the
+    chosen one (a loop reuses the variable's name).
+  - A turret's rotation never clears its other weapons' acquired targets
+    (`GetStat('Mount')`, a stat no weapon has).
+  - Units act in a loop over a list they can leave, by index, so a unit
+    that knocks out one listed before it acts again (as Armoured Commander
+    I's bug 7, which David kept there).
+  - A shot kept by rate of fire is not checked for ammunition again, so
+    the stores can go below zero.
 
 Notes from the first look:
 
@@ -312,10 +363,12 @@ definition loads (and in order), every unit type builds with its crew and
 default loads, the hex geometry, every campaign's calendar and days (each
 day map can be crossed, roads link both ways), saves loading back the
 same, scripted crew screens, the day map's zones tiling at three screen
-sizes, 30 days on the map played by an autopilot to their end, and ten
-whole campaigns from New Campaign to the end of the calendar, headless,
-each day played on the map (`ARMCOM2_CAMPAIGNS=200 cargo test --release
-campaigns` for more, about a minute). Headless runs take
+sizes, 30 days on the map played by an autopilot to their end, twelve
+battles played with every screen drawn (to text), saves taken in a
+battle loading back the same, and ten whole campaigns from New Campaign to the end of the calendar, headless,
+each day played on the map and every battle fought by the autopilot
+(`ARMCOM2_CAMPAIGNS=200 cargo test --release campaigns` for more, about a
+minute and a half; `ARMCOM2_TRACE=1` prints each campaign's records). Headless runs take
 scripted keys (`Game::script`) or make each screen's default choice.
 
 `ARMCOM2_SHOTS=<dir> cargo test shot` writes the calendar, selection,
@@ -326,7 +379,7 @@ crew and day map screens as text, to look at their layouts without a terminal.
 1. Done: shared layer from I, glyphs, art, main menu.
 2. Done: the terminal layout (above).
 3. Done: the definitions, the model, New Campaign, the calendar, saves,
-   settings, the campaign day map. Next: the scenario (battle).
+   settings, the campaign day map, the battle.
 4. Then sound and the theme tune (I's `sound.rs`, with rodio's Vorbis
    feature), release builds.
 

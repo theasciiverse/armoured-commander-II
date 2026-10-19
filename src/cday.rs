@@ -154,9 +154,6 @@ pub struct CampaignDay {
     pub air_support_request: bool,
     pub arty_support_request: bool,
     pub encounter_mod: f64,
-    /// A battle to be fought in this zone (the original's `scenario`).
-    #[serde(default)]
-    pub pending_battle: Option<(i32, i32)>,
 }
 
 impl CampaignDay {
@@ -580,7 +577,6 @@ impl Game {
             air_support_request: false,
             arty_support_request: false,
             encounter_mod: 0.0,
-            pending_battle: None,
         };
         cd.generate_weather(&region, &camp.today, &mut rng);
         cd.fate_points = if camp.options.fate_points { rng.int(1, 2) } else { 0 };
@@ -1007,6 +1003,7 @@ pub(crate) fn spawn_player_squad(camp: &crate::campaign::Campaign, cd: &mut Camp
         };
         let Some(mut u) = Unit::new(&id, rng) else { continue };
         u.nation = pu.nation.clone();
+        u.battle.ai = Some(crate::ai::Ai::default());
         let ctx = CrewContext { player: false, national_skills: &[], today: &camp.today };
         u.generate_new_personnel(&ctx, rng);
         cd.player_squad.push(u);
@@ -1014,7 +1011,7 @@ pub(crate) fn spawn_player_squad(camp: &crate::campaign::Campaign, cd: &mut Camp
 }
 
 /// `BuildPlayerGunList`
-fn build_player_gun_list(pu: &Unit, cd: &mut CampaignDay) {
+pub(crate) fn build_player_gun_list(pu: &Unit, cd: &mut CampaignDay) {
     cd.gun_list = pu.weapons.iter().enumerate().filter(|(_, w)| w.stat("type") == Some("Gun")).map(|(i, _)| i).collect();
     cd.selected_gun = cd.gun_list.first().copied();
 }

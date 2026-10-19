@@ -1245,10 +1245,13 @@ impl Game {
         if self.scr.is_headless() && self.script.is_empty() {
             return;
         }
-        if self.camp().pu().positions.len() <= 1 {
+        if self.player_unit().positions.len() <= 1 {
             return;
         }
         let (mut p1, mut p2) = (0usize, 1usize);
+        // who was where, to tell who moved
+        let who = |c: &Personnel| format!("{} {} {}", c.first_name, c.last_name, c.birthday);
+        let original: Vec<Option<String>> = self.player_unit().positions.iter().map(|p| p.crewman.as_ref().map(who)).collect();
         self.draw_swap_menu(p1, p2);
         loop {
             self.flush();
@@ -1259,11 +1262,25 @@ impl Game {
                 continue;
             }
             match self.key().vk {
-                Vk::Escape => return,
+                Vk::Escape => {
+                    // in a battle, crewmen who changed position lose their
+                    // command
+                    if self.scenario.is_some() {
+                        let u = self.player_unit_mut();
+                        for (n, p) in u.positions.iter_mut().enumerate() {
+                            if let Some(c) = &mut p.crewman {
+                                if original.get(n).cloned().flatten() != Some(who(c)) {
+                                    c.current_cmd = "None".into();
+                                }
+                            }
+                        }
+                    }
+                    return;
+                }
                 Vk::Enter => {
                     // as in the original, the crewmen keep their CE or BU
                     // status from where they were until it is next set
-                    let u = self.campm().pum();
+                    let u = self.player_unit_mut();
                     let a = u.positions[p1].crewman.take();
                     let b = u.positions[p2].crewman.take();
                     u.positions[p1].crewman = b;
@@ -1273,7 +1290,7 @@ impl Game {
                 }
                 _ => {}
             }
-            let n = self.camp().pu().positions.len();
+            let n = self.player_unit().positions.len();
             match self.mapped_char() {
                 'q' if p1 > 0 => p1 -= 1,
                 'a' if p1 + 1 < p2 => p1 += 1,
@@ -1288,8 +1305,8 @@ impl Game {
     fn draw_swap_menu(&mut self, p1: usize, p2: usize) {
         let keys_qa = self.enkeys('q', 'a');
         let keys_ws = self.enkeys('w', 's');
-        let camp = self.campaign.as_ref().expect("a campaign");
-        let u = camp.pu();
+        let u = self.player_unit().clone();
+        let u = &u;
         let c = &mut self.con;
         c.bg = color::BLACK;
         c.clear();
@@ -1385,14 +1402,14 @@ impl Game {
 
     pub fn crewman(&self, who: CrewRef) -> &Personnel {
         match who {
-            CrewRef::Position(i) => self.camp().pu().positions[i].crewman.as_ref().expect("a crewman"),
+            CrewRef::Position(i) => self.player_unit().positions[i].crewman.as_ref().expect("a crewman"),
             CrewRef::Hospital(i) => &self.camp().hospital[i],
         }
     }
 
     pub fn crewman_mut(&mut self, who: CrewRef) -> &mut Personnel {
         match who {
-            CrewRef::Position(i) => self.campm().pum().positions[i].crewman.as_mut().expect("a crewman"),
+            CrewRef::Position(i) => self.player_unit_mut().positions[i].crewman.as_mut().expect("a crewman"),
             CrewRef::Hospital(i) => &mut self.campm().hospital[i],
         }
     }
@@ -1400,7 +1417,7 @@ impl Game {
     /// The position the crewman is in now (his normal one in hospital).
     fn crew_position_name(&self, who: CrewRef) -> String {
         match who {
-            CrewRef::Position(i) => self.camp().pu().positions[i].name.clone(),
+            CrewRef::Position(i) => self.player_unit().positions[i].name.clone(),
             CrewRef::Hospital(i) => self.camp().hospital[i].normal_position.clone(),
         }
     }
@@ -1411,7 +1428,7 @@ impl Game {
         let keys_ws = self.enkeys('w', 's');
         let f = self.enkey('f').to_ascii_uppercase().to_string();
         let position = self.crew_position_name(who);
-        let unit_id = self.camp().pu().unit_id.clone();
+        let unit_id = self.player_unit().unit_id.clone();
         let cr = self.crewman(who).clone();
         let active = cr.alive && cr.field_hospital.is_none();
         let n_skills = cr.skills.len();
@@ -1733,6 +1750,9 @@ mod tests {
             // field hospital (which the original does one time in 1001
             // even without an injury) and the calendar jumped
             let camp = g.camp();
+            if std::env::var("ARMCOM2_TRACE").is_ok() {
+                eprintln!("seed {seed} {}: {:?} vp {} ended {} oob {}", camp.filename, camp.records, camp.player_vp, camp.ended, camp.player_oob);
+            }
             let logged: Vec<&String> = camp.logs.iter().map(|(d, _)| d).collect();
             let missing = camp.combat_calendar.iter().filter(|d| !logged.contains(d)).count();
             let jumped = camp.journal.is_empty() || missing > 0;

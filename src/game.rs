@@ -204,6 +204,11 @@ pub struct Game {
     pub msg: Option<(Console, i32, i32)>,
     /// The mouse has moved over the screen (so the zone info follows it).
     pub mouse_seen: bool,
+    /// The battle under way, if any (the original's `scenario`).
+    pub scenario: Option<crate::battle::Scenario>,
+    pub battle_anim: crate::battle_ui::BattleAnim,
+    /// Tests: draw the screens even without a terminal.
+    pub render_headless: bool,
 }
 
 impl Game {
@@ -230,6 +235,9 @@ impl Game {
             day_anim: crate::daymap::DayAnim::default(),
             msg: None,
             mouse_seen: false,
+            scenario: None,
+            battle_anim: crate::battle_ui::BattleAnim::default(),
+            render_headless: false,
         };
         g.generate_keyboards();
         g
@@ -344,6 +352,7 @@ impl Game {
         let until = std::time::Instant::now() + std::time::Duration::from_millis(hundredths * 10);
         while std::time::Instant::now() < until {
             self.day_tick();
+            self.battle_tick();
             self.flush();
             if !self.input() {
                 continue;
@@ -413,7 +422,13 @@ impl Game {
         }
         let pause = if longer_pause { 200 } else { 130 };
         let pause = pause + 40 * self.settings.message_pause.max(0) as u64;
-        if self.day_map.is_some() {
+        if self.battle_anim.active && self.scenario.is_some() {
+            self.msg = Some((msg, x, y));
+            self.draw_battle();
+            self.wait(pause, false);
+            self.msg = None;
+            self.draw_battle();
+        } else if self.day_map.is_some() {
             self.msg = Some((msg, x, y));
             self.draw_day();
             self.wait(pause, false);

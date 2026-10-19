@@ -14,8 +14,6 @@
 //! original's are; roads, rivers, bridges, the front line, the player and
 //! known enemy strengths are drawn as it draws them.
 //!
-//! Battles are not ported yet: an encounter is announced, and the enemy
-//! withdraws, so the zone is taken as after a won battle.
 
 use crate::calendar::{CrewRef, display_crew};
 use crate::campaign::display_my_info;
@@ -447,7 +445,7 @@ impl Game {
     /// The day map screen is up: the day map and its animations draw
     /// themselves while messages wait.
     pub fn day_tick(&mut self) {
-        if self.day_map.is_none() {
+        if self.day_map.is_none() || self.battle_anim.active {
             return;
         }
         if self.day_anim.last.is_none_or(|t| t.elapsed() >= ANIM_EVERY) {
@@ -1337,7 +1335,7 @@ impl Game {
 
     /// `CheckForRandomEvent`
     pub fn check_for_random_event(&mut self) {
-        if self.cd().ended || self.cd().pending_battle.is_some() {
+        if self.cd().ended || self.scenario.is_some() {
             return;
         }
         let roll = percentile(&mut self.rng);
@@ -1522,7 +1520,7 @@ impl Game {
                 if captured.contains(&player) {
                     self.day_message("Enemy forces attack your zone!", None);
                     self.add_journal("Enemy forces attacked our zone");
-                    self.cdm().pending_battle = Some(player);
+                    self.scenario = Some(crate::battle::Scenario::new(player));
                     self.add_record("Battles Fought", 1);
                 } else if captured.len() > 1 {
                     self.day_message("Enemy forces have captured allied-held zones!", None);
@@ -1583,21 +1581,9 @@ impl Game {
         }
     }
 
-    /// A battle would be fought here; it is not ported yet, so the enemy
-    /// withdraws and the zone is held or taken, as after a won battle.
-    fn fight_pending_battle(&mut self) {
-        let Some(_zone) = self.cdm().pending_battle.take() else { return };
-        self.show_notification(
-            "Battles are not ported yet: the enemy withdraws before you engage, and the zone is yours.",
-            false,
-        );
-    }
-
     /// What follows a battle in `DoCampaignDayLoop`.
     fn after_battle(&mut self) {
-        // `DoCrewRecoveryCheck` sets the campaign day's condition rather
-        // than each crewman's (kept for when battles are ported); with no
-        // battles there is nothing to recover from yet
+        self.do_crew_recovery_check();
         if self.camp().options.permadeath {
             let dead = self.camp().pu().positions.first().and_then(|p| p.crewman.as_ref()).is_some_and(|c| !c.alive);
             if dead {
@@ -1683,13 +1669,16 @@ impl Game {
                 self.display_day_summary();
                 break;
             }
-            if self.cd().pending_battle.is_some() {
-                self.fight_pending_battle();
+            if self.scenario.is_some() {
+                self.do_scenario_loop();
                 if self.exiting {
                     break;
                 }
-                self.after_battle();
+                if self.scenario.is_none() {
+                    self.after_battle();
+                }
                 self.draw_day();
+                continue;
             }
             if self.cd().ended {
                 self.day_message("Your combat day has ended.", None);
@@ -1950,7 +1939,7 @@ impl Game {
             if roll <= self.cd().hex(to).enemy_strength as f64 * 9.5 {
                 self.day_message("You encounter enemy resistance!", None);
                 self.advance_clock(0, 15, false);
-                self.cdm().pending_battle = Some(to);
+                self.scenario = Some(crate::battle::Scenario::new(to));
                 self.cdm().encounter_mod = 0.0;
                 self.add_record("Battles Fought", 1);
                 self.add_journal("Entered an enemy-held zone, encountered resistance");

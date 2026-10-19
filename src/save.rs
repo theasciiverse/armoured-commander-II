@@ -18,7 +18,7 @@ use std::path::PathBuf;
 /// Bumped whenever the saved state changes shape; saves of another format
 /// are not listed, as the original leaves out saves of another major
 /// version.
-pub const FORMAT: u32 = 1;
+pub const FORMAT: u32 = 2;
 
 #[derive(Serialize)]
 struct SaveRef<'a> {
@@ -28,6 +28,7 @@ struct SaveRef<'a> {
     saved_at: u64,
     campaign: &'a Campaign,
     campaign_day: &'a Option<CampaignDay>,
+    scenario: &'a Option<crate::battle::Scenario>,
 }
 
 #[derive(Deserialize)]
@@ -38,6 +39,8 @@ struct SaveFile {
     saved_at: u64,
     campaign: Campaign,
     campaign_day: Option<CampaignDay>,
+    #[serde(default)]
+    scenario: Option<crate::battle::Scenario>,
 }
 
 /// What the load menu shows of a save.
@@ -70,7 +73,7 @@ pub fn to_json(g: &Game) -> Result<String, String> {
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_secs())
         .unwrap_or(0);
-    let save = SaveRef { format: FORMAT, version: VERSION, saved_at, campaign: camp, campaign_day: &g.campaign_day };
+    let save = SaveRef { format: FORMAT, version: VERSION, saved_at, campaign: camp, campaign_day: &g.campaign_day, scenario: &g.scenario };
     serde_json::to_string(&save).map_err(|e| e.to_string())
 }
 
@@ -82,6 +85,7 @@ pub fn from_json(g: &mut Game, json: &str) -> Result<(), String> {
     }
     g.campaign = Some(file.campaign);
     g.campaign_day = file.campaign_day;
+    g.scenario = file.scenario;
     Ok(())
 }
 
@@ -230,6 +234,35 @@ impl Game {
 mod tests {
     use super::*;
     use crate::cday::tests::new_game;
+
+    #[test]
+    fn a_save_in_a_battle_loads_back() {
+        for seed in 1..6 {
+            let mut g = new_game("pattons_best", seed);
+            let zone = g.cd().player_unit_location;
+            g.cdm().hexm(zone).controlled_by = 1;
+            g.scenario = Some(crate::battle::Scenario::new(zone));
+            g.setup_battle();
+            for _ in 0..6 {
+                g.scm().advance_phase = false;
+                g.advance_to_next_phase();
+                if g.scenario.as_ref().is_none_or(|s| s.finished) {
+                    break;
+                }
+            }
+            let json = to_json(&g).unwrap();
+            let mut h = new_game("poland_campaign", 1);
+            from_json(&mut h, &json).unwrap();
+            assert_eq!(g.scenario.is_some(), h.scenario.is_some());
+            let again = to_json(&h).unwrap();
+            let strip = |s: &str| {
+                let mut v: serde_json::Map<String, serde_json::Value> = serde_json::from_str(s).unwrap();
+                v.remove("saved_at");
+                v
+            };
+            assert_eq!(strip(&json), strip(&again));
+        }
+    }
 
     #[test]
     fn a_save_loads_back_the_same() {

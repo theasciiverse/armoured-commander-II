@@ -2,7 +2,10 @@
 // screens that will use it.
 #![allow(dead_code)]
 
+mod ai;
 mod art;
+mod battle;
+mod battle_ui;
 mod calendar;
 mod campaign;
 mod cday;
@@ -32,8 +35,8 @@ const HELP: &str = "armcom2 [--art]
 
 Armoured Commander II, the World War II tank commander roguelike by
 Gregory Adam Scott, on its way to the terminal. Being ported: New
-Campaign, the calendar, the crew, the day map and the saves work; the
-battles do not yet, so the enemy withdraws from every encounter.
+Campaign, the calendar, the crew, the day map, the battles and the saves
+are ported; no sound yet.
 
   --art   browse the game's REXPaint art (portraits, flags, maps);
           left/right to change picture, f to switch between its own size

@@ -395,6 +395,11 @@ pub struct Weapon {
     pub maintained_rof: bool,
     pub jammed: bool,
     pub broken: bool,
+    /// (target unit, level 0 or 1), units by their index in the battle.
+    #[serde(default)]
+    pub acquired_target: Option<(usize, i32)>,
+    #[serde(default)]
+    pub selected_target: Option<usize>,
 }
 
 impl Weapon {
@@ -438,6 +443,8 @@ impl Weapon {
             maintained_rof: false,
             jammed: false,
             broken: false,
+            acquired_target: None,
+            selected_target: None,
         };
         if kind == "Gun" && w.stats.contains_key("ammo_type_list") {
             w.ammo_stores = Some(BTreeMap::new());
@@ -621,6 +628,36 @@ pub struct Unit {
     pub pinned: bool,
     pub reduced: bool,
     pub routed: bool,
+    #[serde(default)]
+    pub battle: BattleState,
+}
+
+/// The rest of `ResetMe`'s statuses, and what a unit has in a battle.
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct BattleState {
+    pub ai: Option<crate::ai::Ai>,
+    /// Line of sight to each unit, by index in the battle.
+    pub los: BTreeMap<usize, bool>,
+    pub terrain_seed: i32,
+    pub previous_facing: Option<i32>,
+    pub previous_turret_facing: Option<i32>,
+    pub overrun: bool,
+    pub hit_by_fp: bool,
+    pub deployed: bool,
+    pub unit_fatigue: i32,
+    pub dug_in: bool,
+    pub entrenched: bool,
+    pub fortified: bool,
+    pub forward_move_chance: f64,
+    pub reverse_move_chance: f64,
+    pub bog_chance: f64,
+    pub forward_move_bonus: f64,
+    pub reverse_move_bonus: f64,
+    pub fp_to_resolve: i32,
+    pub ap_hits_to_resolve: Vec<crate::battle::Profile>,
+    pub transport: Option<String>,
+    pub cargo: Option<String>,
 }
 
 impl Unit {
@@ -676,7 +713,47 @@ impl Unit {
             pinned: false,
             reduced: false,
             routed: false,
+            battle: BattleState::default(),
         })
+    }
+
+    /// `ResetMe`: a unit's battle statuses as new.
+    pub fn reset_me(&mut self) {
+        self.alive = true;
+        self.hx = 0;
+        self.hy = 0;
+        self.terrain = None;
+        self.spotted = false;
+        self.smoke = 0;
+        self.hull_down.clear();
+        self.moving = false;
+        self.immobilized = false;
+        self.bogged = false;
+        self.fired = false;
+        self.facing = None;
+        self.turret_facing = None;
+        self.pinned = false;
+        self.reduced = false;
+        self.routed = false;
+        let ai = self.battle.ai.take();
+        let (transport, cargo) = (self.battle.transport.take(), self.battle.cargo.take());
+        self.battle = BattleState { ai, transport, cargo, ..BattleState::default() };
+        // the original keeps these pointing at the last battle's units,
+        // which never match again; here they are indexes, so cleared
+        for w in &mut self.weapons {
+            w.acquired_target = None;
+            w.selected_target = None;
+        }
+    }
+
+    /// `GetStat('category')`
+    pub fn category(&self) -> &str {
+        self.stat("category").unwrap_or("")
+    }
+
+    /// The position index of the crewman in a position, if any.
+    pub fn position_of(&self, name: &str) -> Option<usize> {
+        self.positions.iter().position(|p| p.name == name && p.crewman.is_some())
     }
 
     /// `GetStat` as a string (`None` if absent, null or not a string).
