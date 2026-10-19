@@ -175,6 +175,7 @@ impl Screen {
 pub fn quit() -> ! {
     let _ = ratatui::crossterm::execute!(std::io::stdout(), event::DisableMouseCapture);
     ratatui::restore();
+    crate::sound::shutdown();
     log::info!("quit");
     std::process::exit(0);
 }

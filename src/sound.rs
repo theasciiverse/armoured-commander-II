@@ -1,17 +1,14 @@
 //! Sound (`InitMixer`, `PlaySound`, `PlaySoundFor` and the main theme in
 //! armcom2.py): the original's effects and theme tune, `sounds/*.ogg` (GPL
 //! with the rest), built into the binary. The original mixed effects on 16
-//! SDL channels and played the theme as SDL music; here one audio thread
-//! owns the output device, mixes the effects, and plays the theme in its
-//! own player. Without an audio device the game plays on silently; tests
-//! never open the device.
+//! SDL channels and played the theme as SDL music. Here, on Linux the
+//! system's own player plays each sound (see `backend`), elsewhere rodio.
+//! Without a way to play, the game plays on silently; tests play nothing.
 
 use crate::defs::{self, engine};
 use crate::model::{Unit, Weapon};
 use crate::rng::Rng;
-use std::sync::OnceLock;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
-use std::sync::mpsc::{self, Sender};
 
 /// The effects, by the names `PlaySoundFor` asks for.
 pub const SOUNDS: &[(&str, &[u8])] = &[
@@ -54,14 +51,6 @@ pub const SOUNDS: &[(&str, &[u8])] = &[
 
 const THEME: &[u8] = include_bytes!("../data/sounds/armcom2_theme.ogg");
 
-enum Command {
-    Effect(&'static [u8]),
-    /// Start the theme from the beginning, looping.
-    Theme,
-    PauseTheme,
-    StopTheme,
-}
-
 static ENABLED: AtomicBool = AtomicBool::new(true);
 static VOLUME: AtomicU32 = AtomicU32::new(10);
 
@@ -80,64 +69,9 @@ fn music_volume() -> f32 {
     (VOLUME.load(Ordering::Relaxed) * 6) as f32 / 128.0
 }
 
-static QUEUE: OnceLock<Option<Sender<Command>>> = OnceLock::new();
-
-fn queue() -> Option<&'static Sender<Command>> {
-    QUEUE
-        .get_or_init(|| {
-            if cfg!(test) {
-                return None;
-            }
-            let (tx, rx) = mpsc::channel::<Command>();
-            let spawned = std::thread::Builder::new().name("audio".into()).spawn(move || {
-                use rodio::Source;
-                let mut sink = match rodio::DeviceSinkBuilder::open_default_sink() {
-                    Ok(s) => s,
-                    Err(e) => {
-                        log::warn!("no audio device, playing without sound: {e}");
-                        return;
-                    }
-                };
-                // rodio would print to the terminal, over the game
-                sink.log_on_drop(false);
-                log::info!("sound: audio device open");
-                let theme = rodio::Player::connect_new(sink.mixer());
-                for cmd in rx {
-                    match cmd {
-                        Command::Effect(data) => match rodio::Decoder::new(std::io::Cursor::new(data)) {
-                            Ok(source) => sink.mixer().add(source.amplify(effects_volume())),
-                            Err(e) => log::error!("sound: cannot decode: {e}"),
-                        },
-                        Command::Theme => {
-                            theme.clear();
-                            match rodio::Decoder::new(std::io::Cursor::new(THEME)) {
-                                Ok(source) => {
-                                    theme.set_volume(music_volume());
-                                    theme.append(source.repeat_infinite());
-                                    theme.play();
-                                }
-                                Err(e) => log::error!("sound: theme: {e}"),
-                            }
-                        }
-                        Command::PauseTheme => theme.pause(),
-                        Command::StopTheme => theme.clear(),
-                    }
-                }
-            });
-            spawned.ok().map(|_| tx)
-        })
-        .as_ref()
-}
-
-fn send(cmd: Command) {
-    if let Some(tx) = queue() {
-        let _ = tx.send(cmd);
-    }
-}
-
 /// `PlaySound`: start an effect, alongside any already playing.
 pub fn play(name: &str) {
-    if !ENABLED.load(Ordering::Relaxed) {
+    if !ENABLED.load(Ordering::Relaxed) || cfg!(test) {
         return;
     }
     let Some((_, data)) = SOUNDS.iter().find(|(n, _)| *n == name) else {
@@ -145,25 +79,254 @@ pub fn play(name: &str) {
         return;
     };
     log::trace!("sound: {name}");
-    send(Command::Effect(data));
+    backend::effect(data, effects_volume());
 }
 
-/// The main theme, from the start (`Mix_PlayMusic`; the original rewinds
-/// it when coming back to the main menu).
+/// The main theme, from the start, looping (`Mix_PlayMusic`; the original
+/// rewinds it when coming back to the main menu).
 pub fn theme_start() {
-    if ENABLED.load(Ordering::Relaxed) {
-        send(Command::Theme);
+    if ENABLED.load(Ordering::Relaxed) && !cfg!(test) {
+        backend::theme_start(THEME, music_volume());
     }
 }
 
 /// `Mix_PauseMusic`, when a campaign starts.
 pub fn theme_pause() {
-    send(Command::PauseTheme);
+    backend::theme_stop();
 }
 
 /// Sound switched off in the options.
 pub fn theme_stop() {
-    send(Command::StopTheme);
+    backend::theme_stop();
+}
+
+/// The game is quitting: nothing is left playing.
+pub fn shutdown() {
+    backend::theme_stop();
+}
+
+/// Linux: the sounds are decoded here and handed, as WAV, to the system's
+/// player (`pw-play`, `aplay` or `paplay`, whichever is there), one
+/// process a sound, which the sound server mixes. A static (musl) build
+/// cannot open ALSA itself, and this needs nothing linked in.
+#[cfg(target_os = "linux")]
+mod backend {
+    use std::collections::HashMap;
+    use std::io::Write;
+    use std::process::{Child, Command, Stdio};
+    use std::sync::atomic::{AtomicU64, Ordering};
+    use std::sync::{Arc, Mutex, OnceLock};
+
+    /// A decoded sound: samples, channels, rate.
+    struct Pcm {
+        samples: Vec<f32>,
+        channels: u16,
+        rate: u32,
+    }
+
+    fn decode(data: &'static [u8]) -> Option<Arc<Pcm>> {
+        static CACHE: OnceLock<Mutex<HashMap<usize, Arc<Pcm>>>> = OnceLock::new();
+        let key = data.as_ptr() as usize;
+        let cache = CACHE.get_or_init(Default::default);
+        if let Some(p) = cache.lock().ok()?.get(&key) {
+            return Some(p.clone());
+        }
+        use rodio::Source;
+        let d = match rodio::Decoder::new(std::io::Cursor::new(data)) {
+            Ok(d) => d,
+            Err(e) => {
+                log::error!("sound: cannot decode: {e}");
+                return None;
+            }
+        };
+        let (channels, rate) = (d.channels().get(), d.sample_rate().get());
+        let samples: Vec<f32> = d.collect();
+        let pcm = Arc::new(Pcm { samples, channels, rate });
+        cache.lock().ok()?.insert(key, pcm.clone());
+        Some(pcm)
+    }
+
+    /// The PCM as a 16-bit WAV file at a volume.
+    fn wav(p: &Pcm, volume: f32) -> Vec<u8> {
+        let data_len = (p.samples.len() * 2) as u32;
+        let mut out = Vec::with_capacity(44 + data_len as usize);
+        out.extend_from_slice(b"RIFF");
+        out.extend_from_slice(&(36 + data_len).to_le_bytes());
+        out.extend_from_slice(b"WAVEfmt ");
+        out.extend_from_slice(&16u32.to_le_bytes());
+        out.extend_from_slice(&1u16.to_le_bytes());
+        out.extend_from_slice(&p.channels.to_le_bytes());
+        out.extend_from_slice(&p.rate.to_le_bytes());
+        out.extend_from_slice(&(p.rate * p.channels as u32 * 2).to_le_bytes());
+        out.extend_from_slice(&(p.channels * 2).to_le_bytes());
+        out.extend_from_slice(&16u16.to_le_bytes());
+        out.extend_from_slice(b"data");
+        out.extend_from_slice(&data_len.to_le_bytes());
+        for s in &p.samples {
+            let v = (s * volume).clamp(-1.0, 1.0);
+            out.extend_from_slice(&((v * 32767.0) as i16).to_le_bytes());
+        }
+        out
+    }
+
+    /// The player to use, found once in the PATH.
+    fn player() -> Option<&'static (String, Vec<&'static str>)> {
+        static PLAYER: OnceLock<Option<(String, Vec<&'static str>)>> = OnceLock::new();
+        PLAYER
+            .get_or_init(|| {
+                let path = std::env::var_os("PATH")?;
+                for (name, args) in [("pw-play", vec!["-"]), ("aplay", vec!["-q", "-"]), ("paplay", vec![])] {
+                    for dir in std::env::split_paths(&path) {
+                        let p = dir.join(name);
+                        if p.is_file() {
+                            log::info!("sound: playing through {}", p.display());
+                            return Some((p.to_string_lossy().to_string(), args));
+                        }
+                    }
+                }
+                log::warn!("sound: no player (pw-play, aplay, paplay) found, playing without sound");
+                None
+            })
+            .as_ref()
+    }
+
+    fn spawn(bytes: Vec<u8>) -> Option<Child> {
+        let (cmd, args) = player()?;
+        let mut child = Command::new(cmd).args(args).stdin(Stdio::piped()).stdout(Stdio::null()).stderr(Stdio::null()).spawn().ok()?;
+        let mut stdin = child.stdin.take()?;
+        std::thread::spawn(move || {
+            let _ = stdin.write_all(&bytes);
+        });
+        Some(child)
+    }
+
+    pub fn effect(data: &'static [u8], volume: f32) {
+        std::thread::spawn(move || {
+            let Some(p) = decode(data) else { return };
+            if let Some(mut c) = spawn(wav(&p, volume)) {
+                let _ = c.wait();
+            }
+        });
+    }
+
+    static THEME_GEN: AtomicU64 = AtomicU64::new(0);
+    static THEME_CHILD: Mutex<Option<Child>> = Mutex::new(None);
+
+    pub fn theme_start(data: &'static [u8], volume: f32) {
+        theme_stop();
+        let generation = THEME_GEN.load(Ordering::SeqCst);
+        std::thread::spawn(move || {
+            let Some(p) = decode(data) else { return };
+            let bytes = wav(&p, volume);
+            while THEME_GEN.load(Ordering::SeqCst) == generation {
+                let Some(child) = spawn(bytes.clone()) else { return };
+                {
+                    let mut slot = THEME_CHILD.lock().unwrap();
+                    if THEME_GEN.load(Ordering::SeqCst) != generation {
+                        let mut child = child;
+                        let _ = child.kill();
+                        let _ = child.wait();
+                        return;
+                    }
+                    *slot = Some(child);
+                }
+                // wait for this play-through to end, or to be stopped
+                loop {
+                    std::thread::sleep(std::time::Duration::from_millis(200));
+                    let mut slot = THEME_CHILD.lock().unwrap();
+                    match slot.as_mut().map(|c| c.try_wait()) {
+                        Some(Ok(None)) => continue,
+                        _ => {
+                            *slot = None;
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    pub fn theme_stop() {
+        THEME_GEN.fetch_add(1, Ordering::SeqCst);
+        if let Some(mut c) = THEME_CHILD.lock().ok().and_then(|mut s| s.take()) {
+            let _ = c.kill();
+            let _ = c.wait();
+        }
+    }
+}
+
+/// Elsewhere (macOS, Windows): rodio plays the sounds itself, one audio
+/// thread mixing the effects and playing the theme in its own player.
+#[cfg(not(target_os = "linux"))]
+mod backend {
+    use std::sync::OnceLock;
+    use std::sync::mpsc::{self, Sender};
+
+    enum Command {
+        Effect(&'static [u8], f32),
+        Theme(&'static [u8], f32),
+        StopTheme,
+    }
+
+    static QUEUE: OnceLock<Option<Sender<Command>>> = OnceLock::new();
+
+    fn queue() -> Option<&'static Sender<Command>> {
+        QUEUE
+            .get_or_init(|| {
+                let (tx, rx) = mpsc::channel::<Command>();
+                let spawned = std::thread::Builder::new().name("audio".into()).spawn(move || {
+                    use rodio::Source;
+                    let mut sink = match rodio::DeviceSinkBuilder::open_default_sink() {
+                        Ok(s) => s,
+                        Err(e) => {
+                            log::warn!("no audio device, playing without sound: {e}");
+                            return;
+                        }
+                    };
+                    // rodio would print to the terminal, over the game
+                    sink.log_on_drop(false);
+                    log::info!("sound: audio device open");
+                    let theme = rodio::Player::connect_new(sink.mixer());
+                    for cmd in rx {
+                        match cmd {
+                            Command::Effect(data, v) => match rodio::Decoder::new(std::io::Cursor::new(data)) {
+                                Ok(source) => sink.mixer().add(source.amplify(v)),
+                                Err(e) => log::error!("sound: cannot decode: {e}"),
+                            },
+                            Command::Theme(data, v) => {
+                                theme.clear();
+                                if let Ok(source) = rodio::Decoder::new(std::io::Cursor::new(data)) {
+                                    theme.set_volume(v);
+                                    theme.append(source.repeat_infinite());
+                                    theme.play();
+                                }
+                            }
+                            Command::StopTheme => theme.clear(),
+                        }
+                    }
+                });
+                spawned.ok().map(|_| tx)
+            })
+            .as_ref()
+    }
+
+    fn send(cmd: Command) {
+        if let Some(tx) = queue() {
+            let _ = tx.send(cmd);
+        }
+    }
+
+    pub fn effect(data: &'static [u8], volume: f32) {
+        send(Command::Effect(data, volume));
+    }
+
+    pub fn theme_start(data: &'static [u8], volume: f32) {
+        send(Command::Theme(data, volume));
+    }
+
+    pub fn theme_stop() {
+        send(Command::StopTheme);
+    }
 }
 
 /// `PlaySoundFor(weapon, 'fire')`

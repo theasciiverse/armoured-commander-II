@@ -67,6 +67,12 @@ impl Mode {
 
 fn main() -> io::Result<()> {
     env_logger::init();
+    // a panic leaves no theme tune playing on
+    let hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        sound::shutdown();
+        hook(info);
+    }));
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.iter().any(|a| a == "--help" || a == "-h") {
         println!("{HELP}");
@@ -83,6 +89,7 @@ fn main() -> io::Result<()> {
 
     let terminal = ratatui::init();
     let result = run(terminal, mode, &mut rng);
+    sound::shutdown();
     ratatui::restore();
     log::info!("quit");
     result

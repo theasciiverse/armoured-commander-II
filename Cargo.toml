@@ -18,7 +18,15 @@ env_logger = "0.11"
 flate2 = "1"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = { version = "1.0.154", features = ["preserve_order"] }
-rodio = { version = "0.23.0", default-features = false, features = ["playback", "vorbis"] }
 
 [profile.release]
 debug = 1
+
+# Sound: on Linux the sounds are decoded here and played by the system's
+# player (pw-play, aplay or paplay), so the release builds can be static
+# (musl) without ALSA; elsewhere rodio plays them itself.
+[target.'cfg(target_os = "linux")'.dependencies]
+rodio = { version = "0.23.0", default-features = false, features = ["vorbis"] }
+
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+rodio = { version = "0.23.0", default-features = false, features = ["playback", "vorbis"] }
