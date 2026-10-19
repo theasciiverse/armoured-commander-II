@@ -104,6 +104,17 @@ The original's screens, from its consoles:
 - Windows: the game menu 84x54, the skill menu 43x36, crewman menus at
   full size, pop-ups.
 
+The battle map is the same shape as I's encounter map: the player's hex
+and three rings around it, 37 flat-topped hexes (`GetHexDistance <= 3`;
+a fourth ring is generated but not shown), plotted `x = hx*7 + 26`,
+`y = hy*6 + hx*3 + 21` in square cells. I's terminal hexes (`hex_k`, 59x29
+at 100x30, 81x43 or 103x57 on bigger screens) fit it as they are; their
+spacing is a little narrower for its height than II's 7 by 6. The squeeze
+is the text: the left column stacks tank, crew and commands to 54 rows,
+which at 30 rows must be compacted as I's tank and crew panel was, and
+59 columns of map plus II's 25 and 18 to 21-column columns is more than
+100.
+
 What carries over from I's layout work: the text panels are text, one
 character a column, so the 25-column columns fit as they are (I's left
 panel is 40); the hex maps get terminal hexes drawn for the cell shape,
