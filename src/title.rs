@@ -166,8 +166,13 @@ impl MainMenu {
         if self.options {
             if c == '\u{1b}' {
                 self.options = false;
-            } else {
-                self.settings.change(c.to_ascii_lowercase());
+            } else if self.settings.change(c.to_ascii_lowercase()) && c.eq_ignore_ascii_case(&'s') {
+                // the theme stops or starts with the sound, on the main menu
+                if self.settings.sounds_enabled {
+                    crate::sound::theme_start();
+                } else {
+                    crate::sound::theme_stop();
+                }
             }
             self.draw();
             return None;

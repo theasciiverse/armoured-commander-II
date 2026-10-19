@@ -539,6 +539,7 @@ impl Weapon {
         }
         stores.insert(t.clone(), in_stores - add);
         self.ready_rack.insert(t, in_rr + add);
+        crate::sound::play("shell_move_1");
         true
     }
 

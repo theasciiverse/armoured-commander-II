@@ -103,6 +103,7 @@ impl Settings {
             _ => return false,
         }
         log::info!("settings: {self:?}");
+        crate::sound::configure(self.sounds_enabled, self.master_volume);
         self.save();
         true
     }
@@ -218,6 +219,7 @@ impl Game {
             set_screen_size(w, h);
         }
         let settings = Settings::load();
+        crate::sound::configure(settings.sounds_enabled, settings.master_volume);
         let mut g = Game {
             rng,
             scr,

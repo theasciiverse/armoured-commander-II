@@ -733,8 +733,14 @@ impl Game {
                                 _ => continue,
                             }
                         }
-                        _ => default_load(w),
+                        _ => {
+                            default_load(w);
+                            crate::sound::play("shell_move_10");
+                            self.draw_ammo_menu(&guns, &st);
+                            continue;
+                        }
                     }
+                    crate::sound::play(if add == 1 { "shell_move_1" } else { "shell_move_10" });
                 }
                 _ => continue,
             }

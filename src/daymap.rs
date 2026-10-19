@@ -1265,6 +1265,8 @@ impl Game {
         let from = self.cd().player_unit_location;
         let mins = self.travel_time(from, to);
         self.cdm().selected_direction = None;
+        let pu = self.camp().pu().clone();
+        crate::sound::play_movement(&pu, &mut self.rng);
         if let Some(map) = &self.day_map {
             let (x1, y1) = map.layout.plot(from.0, from.1);
             let (x2, y2) = map.layout.plot(to.0, to.1);
@@ -1825,7 +1827,9 @@ impl Game {
             _ => match self.key_char() {
                 'p' => self.day_map_paused(|g| g.show_swap_position_menu()),
                 'h' => {
-                    self.campm().pum().toggle_hatch(sel);
+                    if self.campm().pum().toggle_hatch(sel) {
+                        crate::sound::play("hatch");
+                    }
                 }
                 _ => {}
             },

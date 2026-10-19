@@ -1378,6 +1378,7 @@ impl Game {
                         let cr = self.crewman_mut(who);
                         cr.adv -= 1;
                         *cr.stats.entry(stat).or_insert(0) += increase;
+                        crate::sound::play("add_skill");
                         crate::save::save_game(self);
                     }
                 }
@@ -1390,6 +1391,7 @@ impl Game {
                         let cr = self.crewman_mut(who);
                         cr.adv -= 1;
                         cr.skills.push(skill);
+                        crate::sound::play("add_skill");
                         crate::save::save_game(self);
                         n_skills = self.crewman(who).skills.len();
                     }

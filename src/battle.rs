@@ -2619,6 +2619,9 @@ impl Game {
                 }
             }
         }
+        if p.result.is_empty() && result == "MISS - HULL DOWN" && involved {
+            crate::sound::play("hull_down_save");
+        }
         p.result = result;
         p
     }
@@ -2851,6 +2854,9 @@ impl Game {
             }
             self.close_attack();
             if p.result == "NO PENETRATION" {
+                crate::sound::play_armour_save(&mut self.rng);
+            }
+            if p.result == "NO PENETRATION" {
                 let had = self.su(i).weapons.iter().any(|w| w.acquired_target.is_some());
                 if had && self.roll() > p.final_chance * 1.75 {
                     for w in &mut self.sum(i).weapons {
@@ -2908,6 +2914,9 @@ impl Game {
                         }
                         continue;
                     }
+                }
+                if ["Vehicle", "Train Car"].contains(&self.su(i).category()) {
+                    crate::sound::play("vehicle_explosion_00");
                 }
                 let mut text = if i == pl { "You were".to_string() } else { format!("{} was", self.uname(i)) };
                 text += " destroyed by ";
@@ -3253,6 +3262,8 @@ impl Game {
             }
         }
         let squad = self.sc().squad.clone();
+        let u = self.su(pl).clone();
+        crate::sound::play_movement(&u, &mut self.rng);
         self.sum(pl).moving = true;
         self.clear_acquired_targets(pl, false);
         for &u in &squad {
@@ -3823,8 +3834,10 @@ impl Game {
             // sniper away and the message always names the position (kept)
             let pos = self.su(pl).positions[target].name.clone();
             if roll > chance {
+                crate::sound::play("ricochet");
                 self.battle_message(&format!("The ricochet from a sniper's bullet rings out, narrowly missing your {pos}!"), true, None, None);
             } else {
+                crate::sound::play("sniper_hit");
                 self.battle_message(&format!("Your {pos} has been hit by a sniper!"), true, None, None);
                 self.resolve_crew_attack(pl, target, &CrewAttack { sniper: true, ..CrewAttack::default() }, true);
             }
@@ -4188,10 +4201,12 @@ impl Game {
                         }
                         "Smoke Grenade" => {
                             self.sum(pl).smoke = 1;
+                            crate::sound::play("smoke");
                             self.bmsg("You throw a smoke grenade.", None);
                         }
                         "Fire Smoke Mortar" => {
                             self.sum(pl).smoke = 2;
+                            crate::sound::play("smoke");
                             let name = self.su(pl).positions[p].name.clone();
                             self.bmsg(&format!("The {name} fires off a smoke mortar round."), None);
                         }

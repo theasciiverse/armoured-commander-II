@@ -20,6 +20,7 @@ mod layout;
 mod model;
 mod rng;
 mod save;
+mod sound;
 mod title;
 mod ui;
 mod xp;
@@ -35,8 +36,8 @@ const HELP: &str = "armcom2 [--art]
 
 Armoured Commander II, the World War II tank commander roguelike by
 Gregory Adam Scott, on its way to the terminal. Being ported: New
-Campaign, the calendar, the crew, the day map, the battles and the saves
-are ported; no sound yet.
+Campaign, the calendar, the crew, the day map, the battles, the saves and
+the sound are ported.
 
   --art   browse the game's REXPaint art (portraits, flags, maps);
           left/right to change picture, f to switch between its own size
@@ -139,6 +140,7 @@ enum Play {
 /// A campaign from the main menu until it ends or the player saves and
 /// quits; the terminal is the campaign's while it runs.
 fn play_campaign(terminal: ratatui::DefaultTerminal, what: Play, rng: &mut Rng) -> io::Result<ratatui::DefaultTerminal> {
+    sound::theme_pause();
     // the mouse, for the zone info on the day map
     let _ = ratatui::crossterm::execute!(io::stdout(), event::EnableMouseCapture);
     let mut g = game::Game::new(ui::Screen::new(Some(terminal)), Rng::new(rng.int(1, i32::MAX) as u64));
@@ -151,6 +153,8 @@ fn play_campaign(terminal: ratatui::DefaultTerminal, what: Play, rng: &mut Rng) 
         g.do_campaign_calendar_loop();
     }
     let mut terminal = g.scr.into_terminal().expect("the campaign hands the terminal back");
+    // back on the main menu, the theme from the start
+    sound::theme_start();
     let _ = ratatui::crossterm::execute!(io::stdout(), event::DisableMouseCapture);
     terminal.clear()?;
     Ok(terminal)
@@ -165,6 +169,8 @@ fn run(mut terminal: ratatui::DefaultTerminal, mut mode: Mode, rng: &mut Rng) ->
             }
             Mode::Splash { since, .. } if since.elapsed() >= title::SPLASH_FOR => {
                 fit_screen();
+                sound::configure(game::Settings::load().sounds_enabled, game::Settings::load().master_volume);
+                sound::theme_start();
                 mode = Mode::Menu(Box::new(MainMenu::new(rng)));
                 log::info!("switch: menu");
             }
@@ -212,6 +218,9 @@ fn run(mut terminal: ratatui::DefaultTerminal, mut mode: Mode, rng: &mut Rng) ->
             Mode::Splash { .. } => {
                 // any key skips the logo
                 fit_screen();
+                let settings = game::Settings::load();
+                sound::configure(settings.sounds_enabled, settings.master_volume);
+                sound::theme_start();
                 mode = Mode::Menu(Box::new(MainMenu::new(rng)));
                 log::info!("switch: menu");
             }

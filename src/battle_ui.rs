@@ -295,14 +295,17 @@ impl Game {
         let (a, t) = (self.su(att), self.su(tgt));
         let (x1, y1) = l.plot(a.hx, a.hy);
         let (x2, y2) = l.plot(t.hx, t.hy);
-        let wp = &a.weapons[w];
+        let weapon = a.weapons[w].clone();
+        let wp = &weapon;
         let wt = wp.stat("type").unwrap_or("").to_string();
         let mg = defs::strings(engine("MG_WEAPONS"));
+        crate::sound::play_fire(wp, &mut self.rng);
         if wt == "Gun" {
             let he = wp.ammo_type.as_deref() == Some("HE");
             self.battle_anim.gun_line = get_line(x1, y1, x2, y2, false);
             self.run_animation(|a| a.gun_line.is_empty());
             if he {
+                crate::sound::play_he_explosion(&mut self.rng);
                 self.battle_anim.bomb = Some(((x2, y2), 7));
                 self.run_animation(|a| a.bomb.is_none());
             }
@@ -357,8 +360,10 @@ impl Game {
         } else {
             ((y - span).max(l.map_y), y - 1)
         };
+        crate::sound::play("plane_incoming_00");
         self.battle_anim.air = Some((direction, get_line(x, y1, x, y2, false)));
         self.run_animation(|a| a.air.is_none());
+        crate::sound::play("stuka_divebomb_00");
         self.battle_anim.bomb = Some(((x, y2 + direction), 14));
         self.run_animation(|a| a.bomb.is_none());
         direction
@@ -370,6 +375,7 @@ impl Game {
         let (x, y) = l.plot(h.0, h.1);
         for _ in 0..3 {
             let (xm, ym) = (3 - self.rng.int(0, 6), (3 - self.rng.int(0, 6)) / 2);
+            crate::sound::play_he_explosion(&mut self.rng);
             self.battle_anim.bomb = Some(((x + xm, y + ym), 3));
             self.run_animation(|a| a.bomb.is_none());
         }
@@ -1653,6 +1659,7 @@ impl Game {
                     if self.su(pl).positions[sel].crewman.is_none() {
                         return;
                     }
+                    crate::sound::play("command_select");
                     self.select_command(pl, sel, k == 'a');
                     self.update_visible_hexes(pl, sel);
                 } else if raw == 'h' {
@@ -1660,6 +1667,7 @@ impl Game {
                         return;
                     }
                     if self.sum(pl).toggle_hatch(sel) {
+                        crate::sound::play("hatch");
                         self.update_visible_hexes(pl, sel);
                     }
                 } else if k == 'f' {
@@ -1702,6 +1710,8 @@ impl Game {
                     }
                     self.sum(pl).moving = true;
                     self.clear_acquired_targets(pl, false);
+                    let u = self.su(pl).clone();
+                    crate::sound::play_movement(&u, &mut self.rng);
                     if self.breakdown_check(pl) {
                         self.bmsg("Your vehicle stalls, making you unable to move further.", None);
                         self.scm().advance_phase = true;

@@ -24,8 +24,8 @@ the tank, weather changes, random events, zones won and lost, new map
 regions, the day's end and summary). Fourth session (same day): the battle
 (`Scenario`, the AI, attacks, armour, firepower, morale, crew injuries,
 the bail-out, air and artillery support, random events), so a campaign
-plays from start to end. Not yet: sound and the theme tune, release
-builds.
+plays from start to end. Then sound and the theme tune.
+Not yet: release builds.
 
 ## Source and licence
 
@@ -41,8 +41,8 @@ builds.
   over from I.
 - The art (`data/*.xp`), the definitions (`data/*.json`) and the campaigns
   (`data/campaigns/`) are the original's files, unchanged.
-- Sounds (`sounds/*.ogg`, GPL with the rest, and a theme tune) are not
-  brought over yet; I's `sound.rs` (rodio) will need its Vorbis feature.
+- Sounds: the original's `sounds/*.ogg` and its theme tune (GPL with
+  the rest), unchanged in `data/sounds/`, built into the binary.
 - Steamworks is dropped.
 - The name and Gregory Adam Scott's blessing: as for I (David,
   2026-10-18), to be asked after the Asciiverse launch.
@@ -101,6 +101,14 @@ line for line. Taken over from I unchanged unless said: `console.rs`
 - `src/game.rs`: the original's globals as one `Game`, and its general
   functions (messages, notifications, text input, the game menu and
   options, keyboard layouts with `DeKey` and `EnKey`, settings).
+- `src/sound.rs`: `PlaySound`, `PlaySoundFor` and the theme, with rodio
+  (Ogg Vorbis): one audio thread mixes the effects and plays the theme in
+  its own player. The volumes are the original's (effects master x 12,
+  music x 6, of SDL's 128); the options' sound switch stops the theme on
+  the main menu. The theme plays on the main menu, pauses for a campaign
+  and starts again from the top after it, as in the original. Without an
+  audio device the game plays silently; tests never open it. Builds need
+  ALSA's development files on Linux (`libasound2-dev`), as I's do.
 - `src/battle.rs` (the battle's rules: the original's `Scenario`, and
   the battle half of `Unit`, `Weapon` and `Personnel`), `src/ai.rs`
   (`AI`), `src/battle_ui.rs` (the battle screen and its loop). A battle
@@ -380,8 +388,7 @@ crew and day map screens as text, to look at their layouts without a terminal.
 2. Done: the terminal layout (above).
 3. Done: the definitions, the model, New Campaign, the calendar, saves,
    settings, the campaign day map, the battle.
-4. Then sound and the theme tune (I's `sound.rs`, with rodio's Vorbis
-   feature), release builds.
+4. Done: sound and the theme tune. Next: release builds.
 
 ## House conventions
 
