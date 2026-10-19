@@ -313,9 +313,9 @@ default loads, the hex geometry, every campaign's calendar and days (each
 day map can be crossed, roads link both ways), saves loading back the
 same, scripted crew screens, the day map's zones tiling at three screen
 sizes, 30 days on the map played by an autopilot to their end, and ten
-whole campaigns from New Campaign to
-the end of the calendar, headless (`ARMCOM2_CAMPAIGNS=400 cargo test
---release campaigns` for more, about 15 seconds). Headless runs take
+whole campaigns from New Campaign to the end of the calendar, headless,
+each day played on the map (`ARMCOM2_CAMPAIGNS=200 cargo test --release
+campaigns` for more, about a minute). Headless runs take
 scripted keys (`Game::script`) or make each screen's default choice.
 
 `ARMCOM2_SHOTS=<dir> cargo test shot` writes the calendar, selection,
