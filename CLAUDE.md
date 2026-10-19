@@ -17,10 +17,13 @@ and tank, journal, field hospital), the crewman report and skills, swap
 positions, nicknames and tank names, the ammunition load, the start and
 end of each day (injuries, levels, the field hospital, crew replacement,
 returning crewmen, a new tank on refits), the end of the campaign with its
-summary and log, and saves (Save and Quit, Continue, Load). Each combat
-day is generated (mission, weather, the 41 zones' terrain, roads, rivers,
-the player's squad) but the day map is not ported yet, so the day passes
-without action. Next: the campaign day map, then the battle.
+summary and log, and saves (Save and Quit, Continue, Load). The same day,
+third session: the campaign day map (travel, recon, support requests,
+advancing fire, waiting, resupply, the crew and ready rack, abandoning
+the tank, weather changes, random events, zones won and lost, new map
+regions, the day's end and summary). Battles are not ported yet: when one
+would start, the enemy withdraws and the zone is taken as after a won
+battle. Next: the battle (`Scenario`).
 
 ## Source and licence
 
@@ -164,9 +167,24 @@ in play:
   info and crew compacted as above, the command menu), a 17-column right
   column (context, time, weather); the columns widen to the original's 25
   and 21 on wider screens.
-- **The day map (after the calendar):** to be decided when it is ported;
-  its 41 pointy-topped zones are 7x9 square cells each, about 14x9
-  terminal cells at their own shape.
+- **The day map** (`src/daymap.rs`) uses the whole terminal: the command
+  menu in a 27-column left column, time, weather, the mission and the
+  zone info in a 29-column right column, the map between. Its 41
+  pointy-topped zones (the original's are 7x9 square cells, 6 by 5 apart)
+  are terminal hexes `c` columns and `r` rows apart, the biggest that fit
+  of 8x3 (at 100x30), 10x4, 12x5 and 14x6; each cell belongs to the zone
+  its place rounds to (cube rounding, as `GetHexLine`), so they tile
+  exactly at any size. At 3 rows a zone they look like offset bricks
+  rather than hexes (each still meets its six neighbours); from 4 rows
+  their edges zigzag as hexes'. Edges are dotted as the original's; rivers
+  colour the edge cells between two zones, bridges cross the middle of
+  them, roads run centre to centre, the front line is red squares on the
+  edges, terrain is drawn from each zone's seed. The tank's info is above
+  the command menu from 41 rows up; at 30 rows it is in the Group tab
+  (the crew tab needs the whole column). The zone info follows the mouse
+  over the map as in the original; without the mouse it shows the chosen
+  direction's zone, else the player's (the original asked for a mouse).
+  The travel tab's direction rose is three rows instead of five.
 
 The original's screens, from its consoles:
 
@@ -218,6 +236,14 @@ Fixed (crashes, hangs, display):
   crashed; it is that hex.
 - Birthdays were `choice(monthrange(...))`, the month's first weekday or
   its length, so day 0 to 6 or the last day; any day of the month now.
+- Resupply with a dead crewman aboard crashed (it updated battle
+  screens a campaign day does not have).
+- Off-map road stubs: the original counted only the road links it drew
+  from a zone (three of six directions), so it drew stubs off the map edge
+  for zones with two roads too, in the previous zone's colour, and could
+  crash on the first; here an edge zone with one road gets one (display).
+- The commander check after a battle reads the first position's crewman,
+  which crashed if the position was empty.
 - Crew names went through IBM850, which the font does not follow, so some
   letters came out wrong (`glyph::encode_name`).
 
@@ -245,6 +271,13 @@ Kept (they change the odds or the course of a campaign), for David:
   something next sets it.
 - New crewmen in a squad unit get no national skills (only the player's
   unit does), and a returning crewman keeps his hospital stay noted.
+- On the day map: allied and enemy zone captures look for a neighbour in
+  five of the six directions (`range(5)`). A new map region keeps the
+  player's row with its roads and rivers, now facing other zones, and
+  makes the rest without roads or rivers (the original never generates
+  them again that day). A zone the enemy takes from under the player is
+  captured back after the battle with its VP again. An increase of enemy
+  strength in an unknown zone does not reset the random event chance.
 - To look at with the battle: a grazing hit's stun test compares the
   condition with a list (`!= ['Good Order', 'Stunned']`, always true);
   `DoCrewRecoveryCheck` sets the campaign day's condition instead of the
@@ -278,20 +311,22 @@ loads at its size, the art renderer, the menu fitting 100x30, every
 definition loads (and in order), every unit type builds with its crew and
 default loads, the hex geometry, every campaign's calendar and days (each
 day map can be crossed, roads link both ways), saves loading back the
-same, scripted crew screens, and ten whole campaigns from New Campaign to
+same, scripted crew screens, the day map's zones tiling at three screen
+sizes, 30 days on the map played by an autopilot to their end, and ten
+whole campaigns from New Campaign to
 the end of the calendar, headless (`ARMCOM2_CAMPAIGNS=400 cargo test
 --release campaigns` for more, about 15 seconds). Headless runs take
 scripted keys (`Game::script`) or make each screen's default choice.
 
-`ARMCOM2_SHOTS=<dir> cargo test shots` writes the calendar, selection and
-crew screens as text, to look at their layouts without a terminal.
+`ARMCOM2_SHOTS=<dir> cargo test shot` writes the calendar, selection,
+crew and day map screens as text, to look at their layouts without a terminal.
 
 ## Order of work
 
 1. Done: shared layer from I, glyphs, art, main menu.
 2. Done: the terminal layout (above).
 3. Done: the definitions, the model, New Campaign, the calendar, saves,
-   settings. Next: the campaign day map, then the scenario (battle).
+   settings, the campaign day map. Next: the scenario (battle).
 4. Then sound and the theme tune (I's `sound.rs`, with rodio's Vorbis
    feature), release builds.
 

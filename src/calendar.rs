@@ -639,15 +639,6 @@ impl Game {
         }
     }
 
-    /// The day map is not ported yet: the day passes without action.
-    fn do_campaign_day_loop(&mut self) {
-        self.show_notification(
-            "The campaign day map is not ported yet, so this day passes without action. Next comes the end of the day.",
-            false,
-        );
-        self.cdm().ended = true;
-    }
-
     /// `ShowStartOfDay`: the date over a sunrise, faded in.
     pub fn show_start_of_day(&mut self) {
         let camp = self.camp();

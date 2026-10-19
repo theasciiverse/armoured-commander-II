@@ -197,6 +197,13 @@ pub struct Game {
     redraw: bool,
     /// Headless runs (tests): the keys to press, in turn.
     pub script: std::collections::VecDeque<Key>,
+    /// The day map, while its screen is up.
+    pub day_map: Option<crate::daymap::DayMap>,
+    pub day_anim: crate::daymap::DayAnim,
+    /// A message window over the day map: console and place.
+    pub msg: Option<(Console, i32, i32)>,
+    /// The mouse has moved over the screen (so the zone info follows it).
+    pub mouse_seen: bool,
 }
 
 impl Game {
@@ -219,6 +226,10 @@ impl Game {
             exiting: false,
             redraw: false,
             script: std::collections::VecDeque::new(),
+            day_map: None,
+            day_anim: crate::daymap::DayAnim::default(),
+            msg: None,
+            mouse_seen: false,
         };
         g.generate_keyboards();
         g
@@ -332,6 +343,7 @@ impl Game {
         }
         let until = std::time::Instant::now() + std::time::Duration::from_millis(hundredths * 10);
         while std::time::Instant::now() < until {
+            self.day_tick();
             self.flush();
             if !self.input() {
                 continue;
@@ -364,12 +376,24 @@ impl Game {
     /// `ShowMessage`, in the middle of the screen: a framed window, shown
     /// for a moment and then taken away.
     pub fn show_message(&mut self, text: &str, longer_pause: bool, portrait: Option<&str>) {
+        self.show_message_at(text, longer_pause, portrait, None);
+    }
+
+    /// `ShowMessage` near a place on the screen (`x`, `y`), below it if
+    /// `below` else above, as the original places messages about a zone.
+    pub fn show_message_at(&mut self, text: &str, longer_pause: bool, portrait: Option<&str>, near: Option<(i32, i32, bool)>) {
         log::info!("message: {text}");
         let (width, mut height) = if portrait.is_some() { (27, 8) } else { (21, 4) };
         let lines = wrap(text, (width - 4) as usize, "");
         height += lines.len() as i32;
-        let x = sxm() + 1 - width / 2;
-        let y = sh() / 2 - height / 2;
+        let (x, y) = match near {
+            Some((nx, ny, below)) => {
+                let x = (nx - width / 2).clamp(0, sw() - width);
+                let y = if below { ny + 3 } else { ny - height - 2 };
+                (x, y.clamp(0, sh() - height))
+            }
+            None => (sxm() + 1 - width / 2, sh() / 2 - height / 2),
+        };
         let mut msg = new_console(width, height, color::DARKEST_GREY, color::WHITE);
         draw_frame(&mut msg, 0, 0, width, height);
         let mut ly = height / 2 - lines.len() as i32 / 2;
@@ -387,11 +411,20 @@ impl Game {
             }
             ly += 1;
         }
-        let saved = self.root.clone();
-        Console::blit(&msg, 0, 0, width, height, &mut self.root, x, y);
         let pause = if longer_pause { 200 } else { 130 };
-        self.wait(pause + 40 * self.settings.message_pause.max(0) as u64, false);
-        self.root = saved;
+        let pause = pause + 40 * self.settings.message_pause.max(0) as u64;
+        if self.day_map.is_some() {
+            self.msg = Some((msg, x, y));
+            self.draw_day();
+            self.wait(pause, false);
+            self.msg = None;
+            self.draw_day();
+        } else {
+            let saved = self.root.clone();
+            Console::blit(&msg, 0, 0, width, height, &mut self.root, x, y);
+            self.wait(pause, false);
+            self.root = saved;
+        }
         self.flush();
     }
 

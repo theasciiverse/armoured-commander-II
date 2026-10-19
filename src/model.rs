@@ -535,6 +535,45 @@ impl Weapon {
         true
     }
 
+    /// `DisplayAmmo`: the ready rack flag, each type's stores and ready
+    /// rack, the maximums and any extra, 12 columns from (x, y).
+    pub fn display_ammo(&self, c: &mut crate::console::Console, x: i32, mut y: i32, skip_active: bool) {
+        use crate::color;
+        use crate::console::Align;
+        c.fg = if self.using_rr { color::WHITE } else { color::GREY };
+        c.print_ex(x + 11, y, Align::Right, "RR");
+        y += 1;
+        let Some(stores) = &self.ammo_stores else { return };
+        let mut total = 0;
+        for t in defs::strings(engine("AMMO_TYPES")) {
+            let Some(n) = stores.get(&t) else { continue };
+            if !skip_active && self.ammo_type.as_deref() == Some(t.as_str()) {
+                c.bg = color::DARKER_BLUE;
+                c.rect(x, y, 12, 1, true);
+                c.bg = color::BLACK;
+            }
+            c.fg = color::WHITE;
+            c.print_ex(x, y, Align::Left, &t);
+            c.fg = color::LIGHT_GREY;
+            c.print_ex(x + 8, y, Align::Right, &n.to_string());
+            total += n;
+            c.print_ex(x + 11, y, Align::Right, &self.ready_rack.get(&t).copied().unwrap_or(0).to_string());
+            y += 1;
+        }
+        y += 1;
+        c.fg = color::WHITE;
+        c.print_ex(x, y, Align::Left, "Max");
+        c.fg = color::LIGHT_GREY;
+        c.print_ex(x + 8, y, Align::Right, &self.max_ammo.to_string());
+        c.print_ex(x + 11, y, Align::Right, &self.rr_size.to_string());
+        let extra = total - self.max_ammo;
+        if extra > 0 {
+            c.fg = color::LIGHT_RED;
+            c.print_ex(x, y + 1, Align::Left, "Extra");
+            c.print_ex(x + 8, y + 1, Align::Right, &extra.to_string());
+        }
+    }
+
     /// `GetEffectiveFP`
     pub fn effective_fp(&self) -> i32 {
         if self.stat("type") != Some("Gun") {
@@ -679,6 +718,31 @@ impl Unit {
     /// `GetName`
     pub fn name(&self) -> &str {
         if self.owning_player == 1 && !self.spotted { "Unspotted Unit" } else { &self.unit_id }
+    }
+
+    /// `ToggleHatch` for the crewman in position `i`, with any hatches
+    /// linked to it: false if it cannot be done.
+    pub fn toggle_hatch(&mut self, i: usize) -> bool {
+        let p = &self.positions[i];
+        if !p.hatch || p.open_top || p.crew_always_ce {
+            return false;
+        }
+        if p.crewman.as_ref().is_none_or(|c| c.incapacitated()) {
+            return false;
+        }
+        let open = !p.hatch_open;
+        let group = p.hatch_group;
+        self.positions[i].hatch_open = open;
+        self.positions[i].update_ce();
+        if let Some(g) = group {
+            for p in &mut self.positions {
+                if p.hatch_group == Some(g) {
+                    p.hatch_open = open;
+                    p.update_ce();
+                }
+            }
+        }
+        true
     }
 
     /// The crewman in a player position (Commander or Commander/Gunner).

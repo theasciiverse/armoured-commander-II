@@ -8,6 +8,7 @@ mod campaign;
 mod cday;
 mod color;
 mod console;
+mod daymap;
 mod defs;
 mod game;
 mod glyph;
@@ -31,8 +32,8 @@ const HELP: &str = "armcom2 [--art]
 
 Armoured Commander II, the World War II tank commander roguelike by
 Gregory Adam Scott, on its way to the terminal. Being ported: New
-Campaign, the calendar, the crew and the saves work; the day map and the
-battles do not yet, so each combat day passes without action.
+Campaign, the calendar, the crew, the day map and the saves work; the
+battles do not yet, so the enemy withdraws from every encounter.
 
   --art   browse the game's REXPaint art (portraits, flags, maps);
           left/right to change picture, f to switch between its own size
@@ -135,6 +136,8 @@ enum Play {
 /// A campaign from the main menu until it ends or the player saves and
 /// quits; the terminal is the campaign's while it runs.
 fn play_campaign(terminal: ratatui::DefaultTerminal, what: Play, rng: &mut Rng) -> io::Result<ratatui::DefaultTerminal> {
+    // the mouse, for the zone info on the day map
+    let _ = ratatui::crossterm::execute!(io::stdout(), event::EnableMouseCapture);
     let mut g = game::Game::new(ui::Screen::new(Some(terminal)), Rng::new(rng.int(1, i32::MAX) as u64));
     let go = match what {
         Play::New => g.start_new_campaign(),
@@ -145,6 +148,7 @@ fn play_campaign(terminal: ratatui::DefaultTerminal, what: Play, rng: &mut Rng) 
         g.do_campaign_calendar_loop();
     }
     let mut terminal = g.scr.into_terminal().expect("the campaign hands the terminal back");
+    let _ = ratatui::crossterm::execute!(io::stdout(), event::DisableMouseCapture);
     terminal.clear()?;
     Ok(terminal)
 }

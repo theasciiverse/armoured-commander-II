@@ -49,7 +49,7 @@ pub struct CdMapHex {
 }
 
 impl CdMapHex {
-    fn new(hx: i32, hy: i32, mission: &str, week: &Dict, rng: &mut Rng) -> Self {
+    pub fn new(hx: i32, hy: i32, mission: &str, week: &Dict, rng: &mut Rng) -> Self {
         let mut h = CdMapHex {
             hx,
             hy,
@@ -85,7 +85,7 @@ impl CdMapHex {
     }
 
     /// `GenerateTerrainType`
-    fn generate_terrain_type(&mut self, region: &Dict, week: &Dict, rng: &mut Rng) {
+    pub fn generate_terrain_type(&mut self, region: &Dict, week: &Dict, rng: &mut Rng) {
         let mut odds = region["cd_terrain_odds"].as_object().cloned().unwrap_or_default();
         if let Some(Value::Object(m)) = week.get("terrain_odds_modifier") {
             for (k, v) in m {
@@ -154,6 +154,9 @@ pub struct CampaignDay {
     pub air_support_request: bool,
     pub arty_support_request: bool,
     pub encounter_mod: f64,
+    /// A battle to be fought in this zone (the original's `scenario`).
+    #[serde(default)]
+    pub pending_battle: Option<(i32, i32)>,
 }
 
 impl CampaignDay {
@@ -577,6 +580,7 @@ impl Game {
             air_support_request: false,
             arty_support_request: false,
             encounter_mod: 0.0,
+            pending_battle: None,
         };
         cd.generate_weather(&region, &camp.today, &mut rng);
         cd.fate_points = if camp.options.fate_points { rng.int(1, 2) } else { 0 };
@@ -993,7 +997,7 @@ fn default_load(w: &mut crate::model::Weapon) {
 }
 
 /// `SpawnPlayerSquad`
-fn spawn_player_squad(camp: &crate::campaign::Campaign, cd: &mut CampaignDay, rng: &mut Rng) {
+pub(crate) fn spawn_player_squad(camp: &crate::campaign::Campaign, cd: &mut CampaignDay, rng: &mut Rng) {
     let pu = camp.pu();
     let n = camp.player_squad_max - cd.player_squad.len() as i32;
     for _ in 0..n.max(0) {

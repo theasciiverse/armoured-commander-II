@@ -123,6 +123,43 @@ pub fn covered(hx: i32, hy: i32, d: i32) -> Vec<(i32, i32)> {
     list
 }
 
+/// `GetLine`: Bresenham's line from one cell to another, both included
+/// (without the first with `los`).
+pub fn get_line(x1: i32, y1: i32, x2: i32, y2: i32, los: bool) -> Vec<(i32, i32)> {
+    let (mut x1, mut y1, mut x2, mut y2) = (x1, y1, x2, y2);
+    let steep = (y2 - y1).abs() > (x2 - x1).abs();
+    if steep {
+        (x1, y1) = (y1, x1);
+        (x2, y2) = (y2, x2);
+    }
+    let rev = x1 > x2;
+    if rev {
+        (x1, x2) = (x2, x1);
+        (y1, y2) = (y2, y1);
+    }
+    let dx = x2 - x1;
+    let dy = (y2 - y1).abs();
+    let mut error = dx / 2;
+    let mut y = y1;
+    let ystep = if y1 < y2 { 1 } else { -1 };
+    let mut points = Vec::new();
+    for x in x1..=x2 {
+        points.push(if steep { (y, x) } else { (x, y) });
+        error -= dy;
+        if error < 0 {
+            y += ystep;
+            error += dx;
+        }
+    }
+    if rev {
+        points.reverse();
+    }
+    if los && points.len() > 1 {
+        points.remove(0);
+    }
+    points
+}
+
 /// `GetDirectionalArrow`
 pub fn arrow(d: i32) -> u16 {
     match d {
