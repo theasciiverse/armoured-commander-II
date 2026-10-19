@@ -3,6 +3,8 @@
 #![allow(dead_code)]
 
 mod ai;
+#[cfg(target_os = "linux")]
+mod alsa;
 mod art;
 mod battle;
 mod battle_ui;

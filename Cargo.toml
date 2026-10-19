@@ -22,11 +22,11 @@ serde_json = { version = "1.0.154", features = ["preserve_order"] }
 [profile.release]
 debug = 1
 
-# Sound: on Linux the sounds are decoded here and played by the system's
-# player (pw-play, aplay or paplay), so the release builds can be static
-# (musl) without ALSA; elsewhere rodio plays them itself.
+# decoding and mixing everywhere; on Linux the output is our own (src/alsa.rs),
+# so the binary does not link libasound (as Armoured Commander I)
 [target.'cfg(target_os = "linux")'.dependencies]
 rodio = { version = "0.23.0", default-features = false, features = ["vorbis"] }
+libc = "0.2"
 
 [target.'cfg(not(target_os = "linux"))'.dependencies]
 rodio = { version = "0.23.0", default-features = false, features = ["playback", "vorbis"] }

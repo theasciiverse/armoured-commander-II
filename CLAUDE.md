@@ -101,14 +101,20 @@ line for line. Taken over from I unchanged unless said: `console.rs`
 - `src/game.rs`: the original's globals as one `Game`, and its general
   functions (messages, notifications, text input, the game menu and
   options, keyboard layouts with `DeKey` and `EnKey`, settings).
-- `src/sound.rs`: `PlaySound`, `PlaySoundFor` and the theme, with rodio
-  (Ogg Vorbis): one audio thread mixes the effects and plays the theme in
-  its own player. The volumes are the original's (effects master x 12,
-  music x 6, of SDL's 128); the options' sound switch stops the theme on
-  the main menu. The theme plays on the main menu, pauses for a campaign
-  and starts again from the top after it, as in the original. Without an
-  audio device the game plays silently; tests never open it. Builds need
-  ALSA's development files on Linux (`libasound2-dev`), as I's do.
+- `src/sound.rs`: `PlaySound`, `PlaySoundFor` and the theme. One audio
+  thread mixes whatever is playing (rodio decodes and mixes), the theme
+  looping among the effects until its stop flag is set. The volumes are
+  the original's (effects master x 12, music x 6, of SDL's 128); the
+  options' sound switch stops the theme on the main menu. The theme plays
+  on the main menu, stops for a campaign and starts again from the top
+  after it, as the original rewinds it. As in I, on Linux the output is
+  `src/alsa.rs` (taken over from I): libasound is loaded with `dlopen`
+  when the first sound plays, so the binary links nothing beyond libc and
+  starts without ALSA, and ALSA's default device reaches PipeWire and
+  PulseAudio (checked: a "PipeWire ALSA [armcom2]" stream). So Linux
+  releases are glibc, not static musl. macOS and Windows use rodio's cpal
+  output. Without an audio device the game plays silently; tests never
+  open it.
 - `src/battle.rs` (the battle's rules: the original's `Scenario`, and
   the battle half of `Unit`, `Weapon` and `Personnel`), `src/ai.rs`
   (`AI`), `src/battle_ui.rs` (the battle screen and its loop). A battle
@@ -242,13 +248,15 @@ a fourth ring is generated but not shown), plotted `x = hx*7 + 26`,
 `y = hy*6 + hx*3 + 21` in square cells. I's terminal hexes (`hex_k`, 59x29
 at 100x30, 81x43 or 103x57 on bigger screens) fit it as they are.
 
-## Bugs in the original
+## Differences from the original
 
-The rule, as for I (David, 2026-10-18): fix what only affects display or
-crashes (or stops the game); keep what changes the game's odds, and list
-it here for David to decide.
+The rule, as for I (David, 2026-10-18): change what only affects display
+or stability; keep what changes the game's odds, and list it here for
+David to decide. In commits, the README and the catalog these are
+described as what the port does, never as faults in Scott's code (David,
+2026-10-19, for I).
 
-Fixed (crashes, hangs, display):
+Changed (stability, display):
 
 - Canada's Best has a refitting week starting on a combat week's last day
   (1945.03.04), so the date can be in the calendar twice; the calendar
@@ -288,7 +296,8 @@ Fixed (crashes, hangs, display):
 - Crew names went through IBM850, which the font does not follow, so some
   letters came out wrong (`glyph::encode_name`).
 
-Kept (they change the odds or the course of a campaign), for David:
+Kept as the original (they change the odds or the course of a
+campaign), for David:
 
 - A crewman with no injuries is sent to the field hospital one time in
   1001 (`roll <= 0.0` when the roll is 0.0), for 0 days; he returns
@@ -388,13 +397,23 @@ crew and day map screens as text, to look at their layouts without a terminal.
 2. Done: the terminal layout (above).
 3. Done: the definitions, the model, New Campaign, the calendar, saves,
    settings, the campaign day map, the battle.
-4. Done: sound and the theme tune. Next: release builds.
+4. Done: sound and the theme tune.
+5. Release (2026-10-20): `.github/workflows/release.yml`, on the pattern
+   of I's: glibc Linux on Ubuntu 22.04 (x86_64, aarch64), macOS and
+   Windows (MSVC), archives `armoured-commander-ii-<target>` with
+   `armcom2`, README.md and LICENSE. Tags `v<original version>-av.<n>`;
+   the first is to be `v3.0.2-av.1`. Not pushed yet: the token here has
+   no `workflow` scope (`gh auth refresh -s workflow`), and Actions are
+   blocked by billing (I's notes, since 2026-10-12). It waits on the local
+   branch `release-workflow`. Still to do for the catalog: the entry in
+   `hub/catalog`, and a preview recording as I's (`asciiverse/`).
 
 ## House conventions
 
 - Session logging (`log` + `env_logger`, see `../../CLAUDE.md`).
 - Saves go to the platform's data folder, not the install folder.
-- Release builds by the same GitHub workflow as Greed
-  (`../greed/.github/workflows/release.yml`).
+- Release builds by a workflow on the pattern of I's
+  (`../armoured-commander/.github/workflows/release.yml`), glibc instead
+  of musl on Linux (see `src/sound.rs` above).
 - Every decision here is to be looked at against Armoured Commander I's,
   and the shared layer kept the same where that costs nothing.
