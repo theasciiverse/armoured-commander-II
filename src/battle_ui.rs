@@ -1209,7 +1209,14 @@ impl Game {
         let xm = x0 + w / 2;
         let cd = self.cd();
         root.fg = color::WHITE;
-        root.print_ex(xm, 1, Align::Center, &date_text(&self.camp().today));
+        // "September 17, 1939" is wider than the column at its narrowest
+        let mut date = date_text(&self.camp().today);
+        if date.len() as i32 > w {
+            if let Some((month, rest)) = date.split_once(' ') {
+                date = format!("{} {rest}", &month[..3]);
+            }
+        }
+        root.print_ex(xm, 1, Align::Center, &date);
         root.bg = color::DARKER_YELLOW;
         root.rect(x0, 2, w, 1, true);
         let start = text(&self.camp().week()["day_start"]);
@@ -1475,26 +1482,38 @@ impl Game {
         } else {
             None
         };
+        let covered = cover.is_some();
         if let Some((t, c)) = cover {
             root.fg = c;
             root.print_ex(x0 + w - 1, y + 4, Align::Right, t);
         }
         let y = y + 1;
+        // facing, hull down and smoke: on their own row where there is one
+        // above the frame, else beside the cover (at 30 rows), else left out
+        let fy = if y + 4 < sh() - 1 {
+            Some(y + 4)
+        } else if !covered {
+            Some(y + 3)
+        } else {
+            None
+        };
         let mut x = x0;
-        if let (Some(f), false) = (unit.facing, unit.category() == "Infantry") {
-            root.put_char_ex(x, y + 4, b'H' as u16, color::LIGHT_GREY, color::DARKEST_GREY);
-            root.put_char_ex(x + 1, y + 4, crate::hexes::arrow(f), color::LIGHT_GREY, color::DARKEST_GREY);
-            x += 3;
-        }
-        if let Some(&d) = unit.hull_down.first() {
-            root.fg = color::SEPIA;
-            root.print_ex(x, y + 4, Align::Left, "HD");
-            root.put_char_ex(x + 2, y + 4, crate::hexes::arrow(d), color::SEPIA, color::DARKEST_GREY);
-            x += 4;
-        }
-        if unit.smoke > 0 {
-            root.fg = color::GREY;
-            root.print_ex(x, y + 4, Align::Left, &format!("Smoke {}", unit.smoke));
+        if let Some(fy) = fy {
+            if let (Some(f), false) = (unit.facing, unit.category() == "Infantry") {
+                root.put_char_ex(x, fy, b'H' as u16, color::LIGHT_GREY, color::DARKEST_GREY);
+                root.put_char_ex(x + 1, fy, crate::hexes::arrow(f), color::LIGHT_GREY, color::DARKEST_GREY);
+                x += 3;
+            }
+            if let Some(&d) = unit.hull_down.first() {
+                root.fg = color::SEPIA;
+                root.print_ex(x, fy, Align::Left, "HD");
+                root.put_char_ex(x + 2, fy, crate::hexes::arrow(d), color::SEPIA, color::DARKEST_GREY);
+                x += 4;
+            }
+            if unit.smoke > 0 {
+                root.fg = color::GREY;
+                root.print_ex(x, fy, Align::Left, &format!("Smoke {}", unit.smoke));
+            }
         }
         root.fg = color::DARK_GREY;
         if y + 6 < sh() - 1 {
