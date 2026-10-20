@@ -409,9 +409,22 @@ crew and day map screens as text, to look at their layouts without a terminal.
    `armcom2`, README.md and LICENSE. Tags `v<original version>-av.<n>`;
    the first is to be `v3.0.2-av.1`, not tagged yet. The workflow is
    pushed (2026-10-20); Actions were blocked by billing (I's notes, since
-   2026-10-12). David does the rest on his other computer (2026-10-20):
-   the catalog preview recording (`--battle` is there to drive it), the
-   entry in `hub/catalog`, and play-testing.
+   2026-10-12).
+6. Catalog (2026-10-20): `hub/catalog/armoured-commander-ii.toml` and
+   `.md`; the preview `asciiverse/armcom2.cast` is `armcom2 --battle
+   pattons_best` played by `asciiverse/drive.py`, the best of twenty takes
+   (a PSW 221 spots the Sherman and is knocked out by its 75mm AP; still
+   at 34 s). Battles are slow to start (spotting), so a take has one or
+   two shots in under a minute; the driver logs every window to
+   `<cast>.log` for choosing. On the website mockup with a local Linux
+   build in its dev-releases (`3.0.2-av.1`). Recording it showed two
+   display faults at 30 rows, both fixed: a long date ("September 17,
+   1939") ran over the right column's frame (the month is shortened when
+   it does not fit), and the unit info's facing row was drawn on the
+   bottom frame (it goes beside the cover, or is left out). Also taken
+   over from I then: the screen is sent only when it has changed, and an
+   empty `XDG_DATA_HOME`, `APPDATA` or `HOME` counts as unset.
+   Play-testing is David's.
 
 ## House conventions
 
