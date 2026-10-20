@@ -58,10 +58,13 @@ pub fn data_dir() -> Option<PathBuf> {
     if cfg!(test) {
         return None;
     }
-    let base = std::env::var_os("XDG_DATA_HOME")
+    // an empty variable counts as unset, or the files would land in the
+    // working directory
+    let var = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty());
+    let base = var("XDG_DATA_HOME")
         .map(PathBuf::from)
-        .or_else(|| std::env::var_os("APPDATA").map(PathBuf::from))
-        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".local/share")))?;
+        .or_else(|| var("APPDATA").map(PathBuf::from))
+        .or_else(|| var("HOME").map(|h| PathBuf::from(h).join(".local/share")))?;
     Some(base.join("armoured-commander-ii"))
 }
 
