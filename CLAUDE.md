@@ -407,11 +407,11 @@ crew and day map screens as text, to look at their layouts without a terminal.
    of I's: glibc Linux on Ubuntu 22.04 (x86_64, aarch64), macOS and
    Windows (MSVC), archives `armoured-commander-ii-<target>` with
    `armcom2`, README.md and LICENSE. Tags `v<original version>-av.<n>`;
-   the first is to be `v3.0.2-av.1`. Not pushed yet: the token here has
-   no `workflow` scope (`gh auth refresh -s workflow`), and Actions are
-   blocked by billing (I's notes, since 2026-10-12). It waits on the local
-   branch `release-workflow`. Still to do for the catalog: the entry in
-   `hub/catalog`, and a preview recording as I's (`asciiverse/`).
+   the first is to be `v3.0.2-av.1`, not tagged yet. The workflow is
+   pushed (2026-10-20); Actions were blocked by billing (I's notes, since
+   2026-10-12). David does the rest on his other computer (2026-10-20):
+   the catalog preview recording (`--battle` is there to drive it), the
+   entry in `hub/catalog`, and play-testing.
 
 ## House conventions
 
