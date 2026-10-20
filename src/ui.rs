@@ -72,6 +72,10 @@ pub struct Screen {
     /// Where the root console's (0, 0) sat in the terminal at the last
     /// flush, to turn mouse positions into console cells.
     origin: (i32, i32),
+    /// What the last flush showed, at what terminal size: an unchanged
+    /// screen is not sent again (each draw writes a few escape codes even
+    /// when no cell differs, 50 times a second).
+    shown: Option<(Console, (i32, i32))>,
     pub key: Key,
     pub mouse: Mouse,
     /// The terminal's new size, if it was resized since last asked.
@@ -80,7 +84,7 @@ pub struct Screen {
 
 impl Screen {
     pub fn new(term: Option<ratatui::DefaultTerminal>) -> Self {
-        Screen { term, last_flush: Instant::now(), origin: (0, 0), key: Key::default(), mouse: Mouse::default(), resized: None }
+        Screen { term, last_flush: Instant::now(), origin: (0, 0), shown: None, key: Key::default(), mouse: Mouse::default(), resized: None }
     }
 
     /// No terminal: tests and headless runs.
@@ -108,7 +112,9 @@ impl Screen {
     /// `console_flush`: show `root` centred in the terminal, then hold to
     /// the frame rate.
     pub fn flush(&mut self, root: &Console) {
-        if let Some(term) = &mut self.term {
+        let size = self.size();
+        let unchanged = matches!(&self.shown, Some((c, s)) if *s == size && c.same_cells(root));
+        if let Some(term) = self.term.as_mut().filter(|_| !unchanged) {
             let mut origin = self.origin;
             let _ = term.draw(|frame| {
                 let area = frame.area();
@@ -116,6 +122,7 @@ impl Screen {
                 origin = present(root, area, buf);
             });
             self.origin = origin;
+            self.shown = Some((root.clone(), size));
         }
         let elapsed = self.last_flush.elapsed();
         if elapsed < FRAME && !self.is_headless() {

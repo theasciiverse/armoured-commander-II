@@ -40,6 +40,12 @@ pub struct Console {
 }
 
 impl Console {
+    /// Same size and the same cells (colours of text yet to be printed,
+    /// alignment and the like aside).
+    pub fn same_cells(&self, other: &Console) -> bool {
+        self.w == other.w && self.h == other.h && self.cells == other.cells
+    }
+
     pub fn new(w: i32, h: i32) -> Self {
         let blank = Cell { ch: 32, fg: color::WHITE, bg: color::BLACK };
         Console {
