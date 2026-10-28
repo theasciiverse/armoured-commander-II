@@ -406,8 +406,8 @@ crew and day map screens as text, to look at their layouts without a terminal.
 5. Release (2026-10-20): `.github/workflows/release.yml`, on the pattern
    of I's: glibc Linux on Ubuntu 22.04 (x86_64, aarch64), macOS and
    Windows (MSVC), archives `armoured-commander-ii-<target>` with
-   `armcom2`, README.md and LICENSE. Tags `v<original version>-av.<n>`;
-   the first is to be `v3.0.2-av.1`, not tagged yet. The workflow is
+   `armcom2`, README.md and LICENSE. Tags `v<version>`, the port's own
+   version; `v1.0.0` pushed 2026-10-28, its run refused by billing. The workflow is
    pushed (2026-10-20); Actions were blocked by billing (I's notes, since
    2026-10-12).
 6. Catalog (2026-10-20): `hub/catalog/armoured-commander-ii.toml` and
@@ -417,7 +417,7 @@ crew and day map screens as text, to look at their layouts without a terminal.
    at 34 s). Battles are slow to start (spotting), so a take has one or
    two shots in under a minute; the driver logs every window to
    `<cast>.log` for choosing. On the website mockup with a local Linux
-   build in its dev-releases (`3.0.2-av.1`). Recording it showed two
+   build in its dev-releases (`1.0.0`). Recording it showed two
    display faults at 30 rows, both fixed: a long date ("September 17,
    1939") ran over the right column's frame (the month is shortened when
    it does not fit), and the unit info's facing row was drawn on the
