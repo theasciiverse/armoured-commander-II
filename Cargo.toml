@@ -1,6 +1,6 @@
 [package]
 name = "armoured-commander-ii"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
 rust-version = "1.88"
 description = "Armoured Commander II, the WWII tank commander roguelike, ported to the terminal for the Asciiverse catalog"

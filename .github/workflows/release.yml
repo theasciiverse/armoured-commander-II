@@ -3,9 +3,8 @@
 # plus a SHA256SUMS file, attached to a GitHub release
 # (hub/catalog/SCHEMA.md, release.source = "github").
 #
-# Taken from Armoured Commander I's. Tags look like v3.0.2-av.1: the
-# version of the original this port
-# follows, then our release. Linux builds are glibc, not static musl: the
+# Taken from Armoured Commander I's. Tags look like v1.0.0, the
+# port's own version. Linux builds are glibc, not static musl: the
 # game loads libasound at run time for sound (src/alsa.rs), which a static
 # binary cannot do. They are built on Ubuntu 22.04, so they run on
 # glibc 2.35 and newer, and need no libasound to start. macOS and Windows
@@ -15,7 +14,7 @@ name: release
 
 on:
   push:
-    tags: ["*-av.*"]
+    tags: ["v*"]
   workflow_dispatch:
     inputs:
       tag:
@@ -150,5 +149,5 @@ jobs:
         run: |
           gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1 \
             || gh release create "$TAG" -R "$GITHUB_REPOSITORY" --title "Armoured Commander II $TAG" \
-                 --notes "Armoured Commander II, Gregory Adam Scott's World War II tank commander roguelike (github.com/sudasana/armcom2, version ${TAG%%-av.*}), ported to the terminal in Rust and Ratatui for the Asciiverse catalog. Its README lists where it differs from the original."
+                 --notes "Armoured Commander II, Gregory Adam Scott's World War II tank commander roguelike (github.com/sudasana/armcom2), ported to the terminal in Rust and Ratatui for the Asciiverse catalog. Its README lists where it differs from the original."
           gh release upload "$TAG" dist/* -R "$GITHUB_REPOSITORY" --clobber
